@@ -58,7 +58,7 @@ The platform features user authentication, project categorization, skill-based p
 - **Gunicorn** - Python WSGI HTTP Server
 
 ### Development Tools
-- **Python 3.14+** - Programming language
+- **Python 3.12+** - Programming language
 - **pytest** - Testing framework
 - **flake8** - Code linting
 - **isort** - Import sorting
