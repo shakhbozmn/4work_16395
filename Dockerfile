@@ -56,11 +56,19 @@ COPY --chown=appuser:appuser . .
 RUN mkdir -p /app/staticfiles /app/media && \
     chown -R appuser:appuser /app/staticfiles /app/media
 
+# Collect static files (as root before user switch)
+RUN python manage.py collectstatic --noinput
+
+# Create entrypoint script (as root before user switch)
+RUN mkdir -p /app/bin && \
+    echo '#!/bin/sh' > /app/bin/entrypoint.sh && \
+    echo 'set -e' >> /app/bin/entrypoint.sh && \
+    echo 'exec gunicorn config.wsgi:application --bind 0.0.0.0:8000 --workers 3 --timeout 120 --worker-tmp-dir /dev/shm --access-logfile - --error-logfile - --preload-app' >> /app/bin/entrypoint.sh && \
+    chmod +x /app/bin/entrypoint.sh && \
+    chown appuser:appuser /app/bin/entrypoint.sh
+
 # Switch to non-root user
 USER appuser
-
-# Collect static files as appuser with proper permissions
-RUN python manage.py collectstatic --noinput
 
 # Expose port
 EXPOSE 8000
@@ -68,15 +76,6 @@ EXPOSE 8000
 # Health check
 HEALTHCHECK --interval=30s --timeout=30s --start-period=10s --retries=3 \
     CMD curl -f http://localhost:8000/health/ || exit 1
-
-# Create entrypoint wrapper for proper signal handling
-RUN mkdir -p /app/bin && cat > /app/bin/entrypoint.sh << 'EOF'
-#!/bin/sh
-set -e
-exec gunicorn config.wsgi:application --bind 0.0.0.0:8000 --workers 3 --timeout 120 --worker-tmp-dir /dev/shm --access-logfile - --error-logfile - --preload-app
-EOF
-
-RUN chmod +x /app/bin/entrypoint.sh
 
 ENTRYPOINT ["/app/bin/entrypoint.sh"]
 
