@@ -59,13 +59,24 @@ RUN mkdir -p /app/staticfiles /app/media && \
 # Switch to non-root user
 USER appuser
 
+# Collect static files as appuser with proper permissions
+RUN python manage.py collectstatic --noinput
+
 # Expose port
 EXPOSE 8000
 
 # Health check
-HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 \
-    CMD python -c "import urllib.request; urllib.request.urlopen('http://localhost:8000/health/')"
+HEALTHCHECK --interval=30s --timeout=30s --start-period=10s --retries=3 \
+    CMD curl -f http://localhost:8000/health/ || exit 1
 
-# Run Gunicorn
-CMD ["gunicorn", "config.wsgi:application", "--bind", "0.0.0.0:8000", "--workers", "3", "--timeout", "120", "--worker-tmp-dir", "/dev/shm", "--access-logfile", "-", "--error-logfile", "-"]
+# Create entrypoint wrapper for proper signal handling
+RUN mkdir -p /app/bin && cat > /app/bin/entrypoint.sh << 'EOF'
+#!/bin/sh
+set -e
+exec gunicorn config.wsgi:application --bind 0.0.0.0:8000 --workers 3 --timeout 120 --worker-tmp-dir /dev/shm --access-logfile - --error-logfile - --preload-app
+EOF
+
+RUN chmod +x /app/bin/entrypoint.sh
+
+ENTRYPOINT ["/app/bin/entrypoint.sh"]
 
