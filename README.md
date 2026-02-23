@@ -157,8 +157,6 @@ Run with verbose output:
 python manage.py test --verbosity=2
 ```
 
-## Deployment Instructions
-
 ### Azure VM Deployment
 
 **Server Details:**
