@@ -66,7 +66,7 @@ The platform features user authentication, project categorization, skill-based p
 ## Local Setup Instructions
 
 ### Prerequisites
-- Python 3.11 or higher
+- Python 3.12 
 - PostgreSQL 14 or higher
 - pip (Python package manager)
 - Git
