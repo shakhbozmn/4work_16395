@@ -1,6 +1,7 @@
 """
 Views for the config app.
 """
+
 from django.http import JsonResponse
 from django.views import View
 
