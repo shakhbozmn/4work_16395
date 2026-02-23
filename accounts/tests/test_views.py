@@ -87,8 +87,12 @@ class ProfileDetailViewTest(TestCase):
     def setUp(self):
         self.client = Client()
         self.user = User.objects.create_user(
-            username="testuser", email="test@example.com", password="testpass123"
+            username="testuser",
+            email="test@example.com",
+            password="testpass123",
+            role="freelancer",
         )
+        self.client.login(username="testuser", password="testpass123")
 
     def test_profile_detail_page_loads(self):
         """Test that profile detail page loads successfully"""
@@ -118,7 +122,10 @@ class ProfileUpdateViewTest(TestCase):
     def setUp(self):
         self.client = Client()
         self.user = User.objects.create_user(
-            username="testuser", email="test@example.com", password="testpass123"
+            username="testuser",
+            email="test@example.com",
+            password="testpass123",
+            role="freelancer",
         )
         self.client.login(username="testuser", password="testpass123")
 

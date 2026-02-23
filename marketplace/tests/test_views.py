@@ -197,6 +197,7 @@ class ApplicationCreateViewTest(TestCase):
             reverse("marketplace:application_create", args=[self.project.id]),
             {
                 "proposed_budget": "300.00",
+                "proposed_timeline": "7",
                 "cover_letter": "I am interested in this project",
             },
         )
@@ -214,13 +215,18 @@ class ApplicationCreateViewTest(TestCase):
             project=self.project,
             freelancer=self.freelancer_user,
             proposed_budget=300.00,
+            proposed_timeline=7,
             cover_letter="First application",
         )
 
         # Try to create second application
         self.client.post(
             reverse("marketplace:application_create", args=[self.project.id]),
-            {"proposed_budget": "400.00", "cover_letter": "Second application"},
+            {
+                "proposed_budget": "400.00",
+                "proposed_timeline": "10",
+                "cover_letter": "Second application",
+            },
         )
 
         # Should not create duplicate

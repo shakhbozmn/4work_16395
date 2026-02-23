@@ -123,6 +123,7 @@ class ApplicationModelTest(TestCase):
             project=self.project,
             freelancer=self.freelancer_user,
             proposed_budget=300.00,
+            proposed_timeline=7,
             cover_letter="I am interested in this project",
         )
 
@@ -151,6 +152,7 @@ class ApplicationModelTest(TestCase):
                 project=self.project,
                 freelancer=self.freelancer_user,
                 proposed_budget=400.00,
+                proposed_timeline=10,
                 cover_letter="Another application",
             )
 
@@ -203,12 +205,14 @@ class ProjectIntegrationTest(TestCase):
             project=self.project,
             freelancer=self.freelancer_user,
             proposed_budget=300.00,
+            proposed_timeline=7,
             cover_letter="Application 1",
         )
         Application.objects.create(
             project=self.project,
             freelancer=freelancer2,
             proposed_budget=400.00,
+            proposed_timeline=10,
             cover_letter="Application 2",
         )
 
@@ -228,12 +232,14 @@ class ProjectIntegrationTest(TestCase):
             project=self.project,
             freelancer=self.freelancer_user,
             proposed_budget=300.00,
+            proposed_timeline=7,
             cover_letter="Application 1",
         )
         Application.objects.create(
             project=project2,
             freelancer=self.freelancer_user,
             proposed_budget=400.00,
+            proposed_timeline=10,
             cover_letter="Application 2",
         )
 
