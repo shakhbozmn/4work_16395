@@ -1,0 +1,24 @@
+{% load static %}
+<a href="{{ url }}"
+   class="inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 transition-colors duration-200
+          {% if variant == 'primary' %}
+            bg-indigo-600 text-white hover:bg-indigo-700 focus:ring-indigo-500
+          {% elif variant == 'secondary' %}
+            bg-emerald-600 text-white hover:bg-emerald-700 focus:ring-emerald-500
+          {% elif variant == 'danger' %}
+            bg-red-600 text-white hover:bg-red-700 focus:ring-red-500
+          {% elif variant == 'outline' %}
+            border-gray-300 text-gray-700 bg-white hover:bg-gray-50 focus:ring-indigo-500
+          {% else %}
+            bg-gray-600 text-white hover:bg-gray-700 focus:ring-gray-500
+          {% endif %}
+          {% if size == 'small' %} px-3 py-1.5 text-xs {% elif size == 'large' %} px-6 py-3 text-base {% endif %}
+          {{ class }}"
+   {% if onclick %}onclick="{{ onclick }}"{% endif %}>
+  {% if icon %}
+    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{ icon }}"></path>
+    </svg>
+  {% endif %}
+  {{ text }}
+</a>
