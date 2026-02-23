@@ -23,7 +23,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: 4work_django
+    container_name: 4work_app
     restart: unless-stopped
     command: >
       sh -c "python manage.py migrate &&

@@ -1,58 +1,45 @@
+# Git
+.git
+.gitignore
 # Python
-__pycache__/
+__pycache__
 *.py[cod]
 *$py.class
 *.so
 .Python
-*.egg-info/
-dist/
-build/
-
-# Virtual Environment
+.venv
 venv/
-env/
-.venv/
-
-# Environment Variables
+ENV/
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+# Environment files with secrets
 .env
 .env.local
 .env.production
-
-# Database
-*.db
-*.sqlite3
-
-# IDE
-.vscode/
-.idea/
-*.swp
-*.swo
-
-# Git
-.git/
-.gitignore
-
-# Docker
-Dockerfile
-docker-compose*.yml
-.dockerignore
-
-# Documentation
-docs/
-*.md
-
-# Media and Static (will be mounted as volumes)
-/media/
-/staticfiles/
-
-# OS
-.DS_Store
-Thumbs.db
-
-# Tests
+# Testing
 .pytest_cache/
 .coverage
 htmlcov/
-
-# Logs
+.tox/
+# Documentation
+docs/
+*.md
+!README.md
+# Docker
+Dockerfile*
+docker-compose*.yml
+.docker/
+# Static files (will be collected during build)
+staticfiles/
+# Local development
+db.sqlite3
+media/
+# CI/CD
+.github/
+.gitlab-ci.yml
+# Misc
 *.log
+*.tmp
