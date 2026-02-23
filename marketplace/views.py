@@ -142,3 +142,82 @@ class CategoryDetailView(DetailView):
             status='open'
         ).select_related('client')
         return context
+
+
+@login_required
+def application_create(request, project_pk):
+    project = get_object_or_404(Project, pk=project_pk)
+    
+    # Only freelancers can apply
+    if request.user.role != 'freelancer':
+        messages.error(request, 'Only freelancers can apply to projects.')
+        return redirect('marketplace:project_detail', pk=project_pk)
+    
+    # Check if already applied
+    if project.applications.filter(freelancer=request.user).exists():
+        messages.error(request, 'You have already applied to this project.')
+        return redirect('marketplace:project_detail', pk=project_pk)
+    
+    if request.method == 'POST':
+        form = ApplicationForm(request.POST)
+        if form.is_valid():
+            application = form.save(commit=False)
+            application.project = project
+            application.freelancer = request.user
+            application.save()
+            messages.success(request, 'Application submitted successfully!')
+            return redirect('marketplace:project_detail', pk=project.pk)
+    else:
+        form = ApplicationForm()
+    
+    return render(request, 'marketplace/application_form.html', {
+        'form': form,
+        'project': project,
+    })
+
+
+@login_required
+def application_accept(request, pk):
+    application = get_object_or_404(Application, pk=pk)
+    project = application.project
+    
+    # Only project owner can accept applications
+    if project.client != request.user:
+        messages.error(request, 'You do not have permission to accept this application.')
+        return redirect('marketplace:project_detail', pk=project.pk)
+    
+    if project.status != 'open':
+        messages.error(request, 'This project is no longer accepting applications.')
+        return redirect('marketplace:project_detail', pk=project.pk)
+    
+    # Accept application
+    application.status = 'accepted'
+    application.save()
+    
+    # Update project
+    project.assigned_freelancer = application.freelancer
+    project.status = 'assigned'
+    project.save()
+    
+    # Reject other applications
+    project.applications.exclude(pk=pk).update(status='rejected')
+    
+    messages.success(request, 'Application accepted successfully!')
+    return redirect('marketplace:project_detail', pk=project.pk)
+
+
+@login_required
+def application_reject(request, pk):
+    application = get_object_or_404(Application, pk=pk)
+    project = application.project
+    
+    # Only project owner can reject applications
+    if project.client != request.user:
+        messages.error(request, 'You do not have permission to reject this application.')
+        return redirect('marketplace:project_detail', pk=project.pk)
+    
+    application.status = 'rejected'
+    application.save()
+    
+    messages.success(request, 'Application rejected.')
+    return redirect('marketplace:project_detail', pk=project.pk)

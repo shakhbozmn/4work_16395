@@ -14,4 +14,9 @@ urlpatterns = [
     # Category URLs
     path('categories/', views.CategoryListView.as_view(), name='category_list'),
     path('category/<int:pk>/', views.CategoryDetailView.as_view(), name='category_detail'),
+    
+    # Application URLs
+    path('project/<int:project_pk>/apply/', views.application_create, name='application_create'),
+    path('application/<int:pk>/accept/', views.application_accept, name='application_accept'),
+    path('application/<int:pk>/reject/', views.application_reject, name='application_reject'),
 ]
