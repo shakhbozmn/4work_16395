@@ -165,3 +165,25 @@ SESSION_CACHE_ALIAS = "default"
 # Application Settings
 SITE_NAME = os.getenv("SITE_NAME", "4work")
 SITE_URL = os.getenv("SITE_URL", "http://localhost:8000")
+
+# Logging Configuration
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "formatters": {
+        "verbose": {
+            "format": "[{levelname}] {asctime} {module} {message}",
+            "style": "{",
+        },
+    },
+    "handlers": {
+        "console": {
+            "class": "logging.StreamHandler",
+            "formatter": "verbose",
+        },
+    },
+    "root": {
+        "handlers": ["console"],
+        "level": "INFO",
+    },
+}

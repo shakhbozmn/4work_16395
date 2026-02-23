@@ -26,7 +26,7 @@ errorlog = "-"
 loglevel = "info"
 
 # Process naming
-proc_name = "4work-[{proc_num}]"
+proc_name = "4work-[%(proc_num)s]"
 
 
 # Server hooks
