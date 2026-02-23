@@ -73,14 +73,14 @@ jobs:
 
       - name: Create environment file
         run: |
-          cat > .env.test << EOF
+          cat > .env << EOF
           SECRET_KEY=test-secret-key-for-ci
           DEBUG=True
           ALLOWED_HOSTS=localhost,127.0.0.1
           DB_NAME=fourwork_test_db
           DB_USER=fourwork_test_user
           DB_PASSWORD=test_password
-          DB_HOST=db
+          DB_HOST=localhost
           DB_PORT=5432
           DJANGO_ENVIRONMENT=development
           EOF
