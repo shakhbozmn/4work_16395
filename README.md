@@ -1,464 +1,343 @@
-# 4work - Freelance Job Marketplace
+# 4work - Freelance Marketplace Platform
+**Note:** This project was created as an assignment for the DSCC course and is for educational purposes only. It does not represent or belong to any real application, company, or commercial entity.
 
-A modern, minimalistic freelance job marketplace built with Django, featuring user authentication, project management, and application tracking.
+## Project Description
 
-## Features
+4work is a web-based platform that allows:
+- **Clients** to create and manage projects with budgets and deadlines
+- **Freelancers** to browse projects and submit applications
+- **Project owners** to review applications and assign projects to freelancers
 
-- **User Authentication**: Custom user model with role-based access (Client/Freelancer)
-- **Project Management**: Full CRUD operations for job postings
-- **Application System**: Freelancers can apply to projects with cover letters
-- **Profile Management**: Users can manage their profiles, skills, and hourly rates
-- **Category System**: Browse projects by category
-- **Search & Filtering**: Advanced search with category and status filters
-- **Responsive Design**: Modern UI built with Tailwind CSS
-- **Admin Panel**: Full admin interface for managing all data
-- **Docker Support**: Multi-container setup with PostgreSQL, Nginx, and Redis
-- **Production Ready**: Security hardening, SSL support, and optimized configuration
+The platform features user authentication, project categorization, skill-based profiles, and a clean, intuitive interface designed for ease of use.
+
+## Features List
+
+### User Management
+- User registration with role selection (Client/Freelancer)
+- Secure login and logout functionality
+- User profiles with bio, hourly rate, and skills
+- Avatar upload support
+
+### Project Management
+- Create projects with title, description, budget, deadline, and category
+- Browse all open projects with search and category filtering
+- View project details and applications
+- Edit and delete own projects
+- Assign freelancers to projects
+
+### Application System
+- Freelancers can apply to open projects
+- Submit cover letter, proposed timeline, and budget
+- Clients can accept or reject applications
+- Automatic status updates (Pending, Accepted, Rejected)
+
+### Categories
+- Pre-defined project categories
+- Filter projects by category
+- Category detail pages showing related projects
+
+### Skills
+- Freelancers can add skills to their profiles
+- Skills help clients find suitable freelancers
 
 ## Technologies Used
 
 ### Backend
-- **Django 5.2.10** - Web framework
-- **Python 3.11+** - Programming language
-- **PostgreSQL 15+** - Primary database
-- **Gunicorn 21+** - WSGI server
-- **Redis 7+** - Caching and sessions
-- **python-dotenv** - Environment variable management
-- **django-cors-headers** - CORS handling
+- **Django 6.** - Python web framework
+- **PostgreSQL** - Relational database
 
 ### Frontend
-- **Tailwind CSS 3.x** - Utility-first CSS framework
-- **HTML5** - Markup
-- **Vanilla JavaScript** - Minimal dependencies
+- **HTML5/Tailwind** - Markup and styling
+- **JavaScript** - Client-side interactivity
+- **Bootstrap 5** - Responsive UI framework (via CDN)
 
-### DevOps
-- **Docker 24+** - Containerization
-- **Docker Compose 2.x** - Multi-container orchestration
-- **Nginx 1.25+** - Reverse proxy and static file serving
-- **GitHub Actions** - CI/CD pipeline
+### Deployment
+- **Docker** - Containerization
+- **Docker Compose** - Multi-container orchestration
+- **Nginx** - Reverse proxy and static file serving
+- **Gunicorn** - Python WSGI HTTP Server
 
 ### Development Tools
-- **pytest-django** - Testing framework
-- **black** - Code formatter
-- **flake8** - Linter
-- **isort** - Import sorter
-- **factory_boy** - Test data generation
+- **Python 3.14+** - Programming language
+- **pytest** - Testing framework
+- **flake8** - Code linting
+- **isort** - Import sorting
 
-## Database Schema
-
-### Models (6 total)
-1. **User** - Custom user model with role (client/freelancer)
-2. **Skill** - Freelancer skills catalog
-3. **Profile** - User profiles with bio, hourly rate, skills (M2M)
-4. **Category** - Project categories
-5. **Project** - Job postings with budget, status, assignments
-6. **Application** - Freelancer applications to projects
-
-### Relationships
-- User ↔ Profile (One-to-One)
-- Profile ↔ Skill (Many-to-Many)
-- User → Projects as client (Many-to-One)
-- User → Projects as freelancer (Many-to-One)
-- Category → Projects (Many-to-One)
-- Project → Applications (Many-to-One)
-- User → Applications (Many-to-One)
-
-## Pages/Views (12+)
-
-1. **Home** (`/`) - Landing page with statistics
-2. **Project List** (`/projects/`) - Browse all projects with filters
-3. **Project Detail** (`/projects/<id>/`) - View project and applications
-4. **Create Project** (`/projects/create/`) - Post new project (clients only)
-5. **Update Project** (`/projects/<id>/update/`) - Edit project (owner only)
-6. **Delete Project** (`/projects/<id>/delete/`) - Delete project (owner only)
-7. **Apply to Project** (`/projects/<id>/apply/`) - Submit application (freelancers only)
-8. **Category List** (`/categories/`) - Browse all categories
-9. **Category Detail** (`/categories/<id>/`) - View projects by category
-10. **Profile Detail** (`/profile/<username>/`) - View user profile
-11. **Edit Profile** (`/profile/edit/`) - Update own profile
-12. **Login** (`/login/`) - User authentication
-13. **Register** (`/register/`) - New user registration
-14. **Logout** (`/logout/`) - User logout
-
-## Installation
+## Local Setup Instructions
 
 ### Prerequisites
+- Python 3.11 or higher
+- PostgreSQL 14 or higher
+- pip (Python package manager)
+- Git
 
-- Python 3.11+
-- Docker 24+
-- Docker Compose 2.x+
-- PostgreSQL 15+ (or use Docker)
+### Installation Steps
 
-### Local Setup
+1. **Clone the repository**
+   ```bash
+   git clone [<repository-url>](https://github.com/shakhbozmn/4work_16395.git)
+   cd 4work_16395
+   ```
 
-1. Clone the repository:
+2. **Create a virtual environment**
+   ```bash
+   python -m venv venv
+   source venv/bin/activate  # On Windows: venv\Scripts\activate
+   ```
+
+3. **Install dependencies**
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+4. **Configure environment variables**
+   Copy the example environment file and edit it:
+   ```bash
+   cp .env.example .env
+   ```
+
+   Edit `.env` with your settings:
+   ```env
+   DEBUG=True
+   SECRET_KEY=your-secret-key-here
+   DB_NAME=4work_db
+   DB_USER=4work_user
+   DB_PASSWORD=your-db-password
+   DB_HOST=localhost
+   DB_PORT=5432
+   ```
+
+5. **Set up PostgreSQL database**
+   ```bash
+   # Create database
+   createdb 4work_db
+
+   # Create user (if needed)
+   createuser 4work_user
+   ```
+
+6. **Run database migrations**
+   ```bash
+   python manage.py migrate
+   ```
+
+7. **Create a superuser (optional)**
+   ```bash
+   python manage.py createsuperuser
+   ```
+
+8. **Load demo data (optional)**
+   ```bash
+   python manage.py load_demo_data
+   ```
+
+9. **Run the development server**
+   ```bash
+   python manage.py runserver
+   ```
+
+10. **Access the application**
+    Open your browser and navigate to: `http://localhost:8000`
+
+### Running Tests
+
+Run all tests:
 ```bash
-git clone https://github.com/yourusername/4work.git
-cd 4work
+python manage.py test
 ```
 
-2. Create a virtual environment:
+Run tests for a specific app:
 ```bash
-python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
+python manage.py test accounts
+python manage.py test marketplace
 ```
 
-3. Install dependencies:
+Run with verbose output:
 ```bash
-pip install -r requirements.txt
+python manage.py test --verbosity=2
 ```
 
-4. Copy environment variables:
+## Deployment Instructions
+
+### Azure VM Deployment
+
+**Server Details:**
+- **DNS**: `dscc-shahbozms.polandcentral.cloudapp.azure.com`
+- **Platform**: Docker + Nginx + Gunicorn
+- **Database**: PostgreSQL (Docker container)
+- **SSL**: Let's Encrypt certificates
+
+### Prerequisites
+- SSH access to the Azure VM
+- Docker and Docker Compose installed on the VM
+- PostgreSQL running in Docker container
+- Let's Encrypt SSL certificates configured
+
+### Deployment Steps
+
+1. **SSH into the server**
+   ```bash
+   ssh user@dscc-shahbozms.polandcentral.cloudapp.azure.com
+   ```
+
+2. **Clone the repository**
+   ```bash
+   cd /opt
+   git clone [<repository-url>](https://github.com/shakhbozmn/4work_16395.git) 4work
+   cd 4work
+   ```
+
+3. **Configure environment variables**
+   ```bash
+   cp .env.example .env.production
+   nano .env.production
+   ```
+
+   Set production values:
+   ```env
+   DEBUG=False
+   SECRET_KEY=your-production-secret-key
+   DB_NAME=4work_db
+   DB_USER=4work_user
+   DB_PASSWORD=your-production-db-password
+   DB_HOST=db  # Docker service name
+   DB_PORT=5432
+   ALLOWED_HOSTS=dscc-shahbozms.polandcentral.cloudapp.azure.com
+   SITE_URL=https://dscc-shahbozms.polandcentral.cloudapp.azure.com
+   ```
+
+4. **Build and run Docker containers**
+   ```bash
+   docker-compose -f docker-compose.yml --env-file .env.production up -d --build
+   ```
+
+5. **Run database migrations**
+   ```bash
+   docker-compose exec web python manage.py migrate
+   ```
+
+6. **Create superuser (if needed)**
+   ```bash
+   docker-compose exec web python manage.py createsuperuser
+   ```
+
+7. **Collect static files**
+   ```bash
+   docker-compose exec web python manage.py collectstatic --noinput
+   ```
+
+8. **Verify deployment**
+   - Check container status: `docker-compose ps`
+   - View logs: `docker-compose logs -f`
+   - Access: `https://dscc-shahbozms.polandcentral.cloudapp.azure.com`
+
+### Docker Services
+
+The `docker-compose.yml` file defines the following services:
+
+- **web**: Django application with Gunicorn
+- **db**: PostgreSQL database
+- **nginx**: Reverse proxy and static file server
+
+### Nginx Configuration
+
+Nginx is configured with:
+- SSL/TLS support using Let's Encrypt certificates
+- Proxy to Gunicorn for Django application
+- Static file serving
+- Security headers
+
+SSL certificate paths:
+- Certificate: `/etc/letsencrypt/live/dscc-shahbozms.polandcentral.cloudapp.azure.com/fullchain.pem`
+- Private Key: `/etc/letsencrypt/live/dscc-shahbozms.polandcentral.cloudapp.azure.com/privkey.pem`
+
+### Common Deployment Commands
+
+View logs:
 ```bash
-cp .env.example .env
+docker-compose logs -f web
 ```
 
-5. Edit `.env` file with your configuration:
+Restart services:
 ```bash
-DEBUG=True
-SECRET_KEY=your-secret-key-here
-ALLOWED_HOSTS=localhost,127.0.0.1
-DB_NAME=4work_dev_db
-DB_USER=4work_dev_user
-DB_PASSWORD=your-db-password
-DB_HOST=localhost
-DB_PORT=5432
-REDIS_HOST=localhost
-REDIS_PORT=6379
-REDIS_DB=0
+docker-compose restart
 ```
 
-6. Run database migrations:
-```bash
-python manage.py migrate
-```
-
-7. Load demo data (optional):
-```bash
-python manage.py load_demo_data
-```
-
-8. Create a superuser:
-```bash
-python manage.py createsuperuser
-```
-
-9. Run the development server:
-```bash
-python manage.py runserver
-```
-
-10. Access the application:
-- Open your browser and navigate to `http://localhost:8000`
-- Login with the demo credentials:
-  - Client: `john_client` / `password123`
-  - Freelancer: `jane_freelancer` / `password123`
-  - Freelancer: `bob_freelancer` / `password123`
-
-### Docker Setup
-
-1. Build and start all services:
-```bash
-docker-compose up -d
-```
-
-2. View logs:
-```bash
-docker-compose logs -f
-```
-
-3. Stop services:
+Stop all services:
 ```bash
 docker-compose down
 ```
 
-4. Rebuild services:
+Update the application:
 ```bash
+git pull
 docker-compose up -d --build
+docker-compose exec web python manage.py migrate
+docker-compose exec web python manage.py collectstatic --noinput
 ```
 
-## Environment Variables
+## Environment Variables Documentation
 
 | Variable | Description | Default | Required |
 |----------|-------------|---------|----------|
-| `SECRET_KEY` | Django secret key | Yes |
-| `DEBUG` | Debug mode (True/False) | Yes |
-| `ALLOWED_HOSTS` | Comma-separated hosts | Yes |
-| `DB_NAME` | Database name | Yes |
-| `DB_USER` | Database user | Yes |
-| `DB_PASSWORD` | Database password | Yes |
-| `DB_HOST` | Database host | Yes |
-| `DB_PORT` | Database port | Yes |
-| `REDIS_HOST` | Redis host | Yes |
-| `REDIS_PORT` | Redis port | Yes |
-| `REDIS_DB` | Redis database | Yes |
-| `EMAIL_HOST` | SMTP host | No |
-| `EMAIL_PORT` | SMTP port | No |
-| `EMAIL_USE_TLS` | Use TLS | No |
-| `EMAIL_HOST_USER` | SMTP username | No |
-| `EMAIL_HOST_PASSWORD` | SMTP password | No |
-| `SITE_NAME` | Site name | Yes |
-| `SITE_URL` | Site URL | Yes |
-| `CORS_ALLOWED_ORIGINS` | CORS origins | Yes |
-| `CSRF_TRUSTED_ORIGINS` | CSRF origins | Yes |
+| `DEBUG` | Enable debug mode (True/False) | `True` | No |
+| `SECRET_KEY` | Django secret key for cryptographic signing | - | Yes |
+| `DB_NAME` | PostgreSQL database name | `4work_db` | Yes |
+| `DB_USER` | PostgreSQL username | `4work_user` | Yes |
+| `DB_PASSWORD` | PostgreSQL password | - | Yes |
+| `DB_HOST` | PostgreSQL host address | `localhost` | Yes |
+| `DB_PORT` | PostgreSQL port | `5432` | No |
+| `ALLOWED_HOSTS` | Comma-separated list of allowed hosts | `localhost` | Yes (production) |
+| `SITE_NAME` | Site name | `4work` | No |
+| `SITE_URL` | Site URL | `http://localhost:8000` | No |
+| `EMAIL_HOST` | SMTP server host | `smtp.gmail.com` | No |
+| `EMAIL_PORT` | SMTP server port | `587` | No |
+| `EMAIL_HOST_USER` | SMTP username | - | No |
+| `EMAIL_HOST_PASSWORD` | SMTP password | - | No |
+| `CORS_ALLOWED_ORIGINS` | Comma-separated CORS origins | - | No |
+| `CSRF_TRUSTED_ORIGINS` | Comma-separated CSRF origins | - | No |
 
-## Docker Services
+### Development vs Production
 
-### Services
+**Development:**
+- `DEBUG=True`
+- `ALLOWED_HOSTS=localhost,127.0.0.1`
+- Email backend: Console (no emails sent)
+- Cache: Local memory cache
 
-1. **django** - Django application with Gunicorn
-2. **postgres** - PostgreSQL database
-3. **redis** - Redis cache
-4. **nginx** - Reverse proxy and static file serving
-
-### Volumes
-
-- `postgres_data` - PostgreSQL data persistence
-- `redis_data` - Redis data persistence
-- `static_volume` - Static files
-- `media_volume` - Media files
-
-### Networking
-
-- `4work_network` - Custom bridge network for inter-service communication
-
-## Admin Panel
-
-Access the admin panel at `/admin/` with your superuser credentials.
-
-## Deployment
-
-### Prerequisites
-
-- Docker and Docker Compose installed on server
-- Domain DNS configured to point to server IP
-- SSH access to server
-
-### Deployment Steps
-
-1. Copy `.env.production` to server:
-```bash
-scp .env.production user@your-server-ip:/path/to/4work/
-```
-
-2. SSH into the server:
-```bash
-ssh user@your-server-ip
-```
-
-3. Navigate to project directory:
-```bash
-cd /path/to/4work
-```
-
-4. Create production `.env` file:
-```bash
-cp .env.production .env
-```
-
-5. Edit `.env` with production values:
-```bash
-DEBUG=False
-SECRET_KEY=your-production-secret-key
-ALLOWED_HOSTS=yourdomain.uz,www.yourdomain.uz
-DB_NAME=4work_prod_db
-DB_USER=4work_prod_user
-DB_PASSWORD=your-secure-db-password
-DB_HOST=postgres
-DB_PORT=5432
-REDIS_HOST=redis
-REDIS_PORT=6379
-REDIS_DB=0
-```
-
-6. Start services:
-```bash
-docker-compose up -d
-```
-
-7. Run database migrations:
-```bash
-docker-compose exec django python manage.py migrate
-```
-
-8. Collect static files:
-```bash
-docker-compose exec django python manage.py collectstatic --noinput
-```
-
-9. Load demo data (optional):
-```bash
-docker-compose exec django python manage.py load_demo_data
-```
-
-### SSL Certificate Setup
-
-1. Install Certbot:
-```bash
-sudo apt-get update
-sudo apt-get install -y certbot python3-certbot-nginx
-```
-
-2. Obtain SSL certificate:
-```bash
-sudo certbot --nginx -d yourdomain.uz
-```
-
-3. Copy certificates to nginx directory:
-```bash
-sudo cp /etc/letsencrypt/live/yourdomain.uz/fullchain.pem /path/to/4work/nginx/ssl/
-sudo cp /etc/letsencrypt/live/yourdomain.uz/privkey.pem /path/to/4work/nginx/ssl/
-```
-
-4. Restart Nginx:
-```bash
-docker-compose restart nginx
-```
-
-## Testing
-
-### Run Tests
-
-```bash
-pytest
-```
-
-### Run Tests with Coverage
-
-```bash
-pytest --cov=. --cov-report=html
-```
-
-### Load Demo Data
-
-```bash
-python manage.py load_demo_data
-```
+**Production:**
+- `DEBUG=False`
+- `ALLOWED_HOSTS=your-domain.com`
+- Email backend: SMTP (if configured)
+- Security settings enabled (HTTPS, secure cookies, HSTS)
 
 ## Project Structure
 
 ```
 4work_16395/
-├── .github/
-│   └── workflows/
-│       └── deploy.yml
-├── accounts/
-│   ├── management/
-│   │   └── commands/
-│   │       └── load_demo_data.py
-│   ├── migrations/
-│   ├── __init__.py
-│   ├── admin.py
-│   ├── apps.py
-│   ├── forms.py
-│   ├── models.py
-│   ├── tests/
-│   ├── urls.py
-│   └── views.py
-├── config/
-│   ├── settings/
-│   │   ├── __init__.py
-│   │   ├── base.py (will be created)
-│   │   ├── development.py (will be created)
-│   │   └── production.py
-│   ├── __init__.py
-│   ├── asgi.py
-│   ├── gunicorn.py
-│   ├── settings.py
-│   ├── urls.py
-│   └── wsgi.py
-├── fixtures/
-│   ├── categories.json
-│   ├── demo_data.json
-│   └── skills.json
-├── marketplace/
-│   ├── migrations/
-│   ├── __init__.py
-│   ├── admin.py
-│   ├── apps.py
-│   ├── forms.py
-│   ├── models.py
-│   ├── tests/
-│   ├── urls.py
-│   └── views.py
-├── nginx/
-│   ├── Dockerfile
-│   ├── nginx.conf
-│   └── ssl/
-├── scripts/
-│   ├── deploy.sh
-│   ├── healthcheck.sh
-│   └── setup_ssl.sh
-├── static/
-│   ├── css/
-│   ├── js/
-│   └── images/
-├── templates/
-│   ├── accounts/
-│   ├── auth/
-│   ├── components/
-│   ├── dashboard/
-│   ├── errors/
-│   ├── marketplace/
-│   ├── base.html
-│   └── home.html
-├── .dockerignore
-├── .env.example
-├── .env.development
-├── Dockerfile
-├── docker-compose.yml
-├── docker-compose.dev.yml
-├── manage.py
-├── pytest.ini
-├── requirements.txt
-└── README.md
+├── accounts/              # User authentication and profiles
+│   ├── models.py         # User, Profile, Skill models
+│   ├── views.py          # Authentication and profile views
+│   ├── forms.py          # User and profile forms
+│   └── tests/           # Account tests
+├── marketplace/          # Projects and applications
+│   ├── models.py         # Project, Category, Application models
+│   ├── views.py          # Project and application views
+│   ├── forms.py          # Project and application forms
+│   └── tests/           # Marketplace tests
+├── config/               # Django configuration
+│   ├── settings.py       # Main settings file
+│   ├── urls.py          # Root URL configuration
+│   └── wsgi.py         # WSGI configuration
+├── templates/            # HTML templates
+│   ├── accounts/        # Account-related templates
+│   ├── marketplace/     # Marketplace-related templates
+│   └── components/     # Reusable components
+├── static/              # Static files (CSS, JS, images)
+├── media/               # User-uploaded files
+├── docker-compose.yml    # Docker Compose configuration
+├── Dockerfile           # Docker image configuration
+├── requirements.txt     # Python dependencies
+└── README.md           # This file
 ```
 
-## Screenshots
-
-*Note: Screenshots will be added after deployment*
-
-### Home Page
-- Modern hero section with call-to-action buttons
-- Statistics display (500+ projects, 1000+ freelancers, 50+ categories)
-
-### Project List
-- Grid layout with project cards
-- Category badges
-- Status indicators
-- Budget display
-- Pagination
-
-### Project Detail
-- Full project information
-- Application list
-- Apply button (freelancers only)
-- Accept/Reject buttons (project owner only)
-
-### Profile Pages
-- User profile with avatar
-- Skills display
-- Hourly rate
-- Statistics (projects posted, applications made)
-
-### Dashboard
-- Role-based dashboard (client/freelancer)
-- Quick stats
-- Recent activity
-
-## Contributing
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Make your changes
-4. Commit your changes (`git commit -m 'Add amazing feature'`)
-5. Push to the branch (`git push origin feature/amazing-feature`)
-6. Open a Pull Request
-
-## License
-
-This project is licensed under the MIT License.
-
-## Author
-
-Built for DSCC Course Project - 4work Freelance Job Marketplace

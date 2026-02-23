@@ -19,21 +19,6 @@ services:
       timeout: 5s
       retries: 5
 
-  redis:
-    image: redis:7-alpine
-    container_name: 4work_redis
-    restart: unless-stopped
-    command: redis-server --appendonly yes
-    volumes:
-      - redis_data:/data
-    networks:
-      - 4work_network
-    healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-
   web:
     build:
       context: .
@@ -53,9 +38,8 @@ services:
       DB_PASSWORD: ${DB_PASSWORD}
       DB_HOST: db
       DB_PORT: 5432
-      REDIS_HOST: redis
-      REDIS_PORT: 6379
-      REDIS_DB: 0
+      SITE_NAME: ${SITE_NAME:-4work}
+      SITE_URL: ${SITE_URL:-http://localhost:8000}
     volumes:
       - static_volume:/app/staticfiles
       - media_volume:/app/media
@@ -63,8 +47,6 @@ services:
       - 4work_network
     depends_on:
       db:
-        condition: service_healthy
-      redis:
         condition: service_healthy
     healthcheck:
       test: ["CMD-SHELL", "curl -f http://localhost:8000/ || exit 1"]
@@ -83,7 +65,7 @@ services:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
       - static_volume:/app/staticfiles:ro
       - media_volume:/app/media:ro
-      - ./nginx/ssl:/etc/nginx/ssl:ro
+      - /etc/letsencrypt:/etc/letsencrypt:ro
     networks:
       - 4work_network
     depends_on:
@@ -97,7 +79,6 @@ services:
 
 volumes:
   postgres_data:
-  redis_data:
   static_volume:
   media_volume:
 

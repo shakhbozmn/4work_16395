@@ -1,0 +1,128 @@
+<form method="get" action="{{ action|default:'.' }}" class="space-y-4 {{ class }}">
+  <div class="flex flex-col md:flex-row gap-4">
+    <!-- Search Input -->
+    <div class="flex-1">
+      <div class="relative">
+        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+          <svg class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+          </svg>
+        </div>
+        <input type="text" 
+               name="q" 
+               value="{{ request.GET.q|default:'' }}"
+               placeholder="{{ placeholder|default:'Search...' }}"
+               class="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+      </div>
+    </div>
+    
+    {% if categories %}
+      <!-- Category Filter -->
+      <div class="w-full md:w-48">
+        <select name="category" 
+                class="block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
+          <option value="">All Categories</option>
+          {% for category in categories %}
+            <option value="{{ category.id }}" {% if request.GET.category == category.id|stringformat:"s" %}selected{% endif %}>
+              {{ category.name }}
+            </option>
+          {% endfor %}
+        </select>
+      </div>
+    {% endif %}
+    
+    {% if status_options %}
+      <!-- Status Filter -->
+      <div class="w-full md:w-40">
+        <select name="status"
+                class="block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
+          <option value="">All Status</option>
+          {% for value, label in status_options %}
+            <option value="{{ value }}" {% if request.GET.status == value %}selected{% endif %}>
+              {{ label }}
+            </option>
+          {% endfor %}
+        </select>
+      </div>
+    {% endif %}
+    
+    {% if sort_options %}
+      <!-- Sort Options -->
+      <div class="w-full md:w-48">
+        <select name="sort"
+                class="block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
+          <option value="">Sort By</option>
+          {% for value, label in sort_options %}
+            <option value="{{ value }}" {% if request.GET.sort == value %}selected{% endif %}>
+              {{ label }}
+            </option>
+          {% endfor %}
+        </select>
+      </div>
+    {% endif %}
+    
+    <!-- Submit Button -->
+    <div>
+      <button type="submit" 
+              class="w-full md:w-auto inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+        <svg class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+        </svg>
+        Search
+      </button>
+    </div>
+  </div>
+  
+  {% if show_advanced|default:false %}
+    <!-- Advanced Filters -->
+    <div class="border-t border-gray-200 pt-4">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        {% if budget_min %}
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Min Budget ($)</label>
+            <input type="number" 
+                   name="budget_min" 
+                   value="{{ request.GET.budget_min|default:'' }}"
+                   placeholder="Min"
+                   class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+          </div>
+        {% endif %}
+        
+        {% if budget_max %}
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Max Budget ($)</label>
+            <input type="number" 
+                   name="budget_max" 
+                   value="{{ request.GET.budget_max|default:'' }}"
+                   placeholder="Max"
+                   class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+          </div>
+        {% endif %}
+        
+        {% if skills %}
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Skills</label>
+            <select name="skill"
+                    class="block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
+              <option value="">All Skills</option>
+              {% for skill in skills %}
+                <option value="{{ skill.id }}" {% if request.GET.skill == skill.id|stringformat:"s" %}selected{% endif %}>
+                  {{ skill.name }}
+                </option>
+              {% endfor %}
+            </select>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+  {% endif %}
+  
+  {% if show_clear|default:true and request.GET %}
+    <div class="flex justify-end">
+      <a href="{{ clear_url|default:request.path }}"
+         class="text-sm text-gray-500 hover:text-gray-700">
+        Clear all filters
+      </a>
+    </div>
+  {% endif %}
+</form>
