@@ -20,6 +20,7 @@ services:
       retries: 5
 
   web:
+    image: ${DOCKERHUB_USERNAME:-local}/4work:latest
     build:
       context: .
       dockerfile: Dockerfile
