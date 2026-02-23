@@ -1,0 +1,72 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:15-alpine
+    container_name: 4work_postgres_dev
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - 4work_network
+
+  redis:
+    image: redis:7-alpine
+    container_name: 4work_redis_dev
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - 4work_network
+
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: 4work_django_dev
+    restart: unless-stopped
+    command: >
+      sh -c "python manage.py migrate &&
+               python manage.py collectstatic --noinput &&
+               python manage.py runserver 0.0.0.0:8000"
+    environment:
+      DEBUG: "True"
+      SECRET_KEY: ${SECRET_KEY}
+      ALLOWED_HOSTS: "localhost,127.0.0.1"
+      DB_NAME: ${DB_NAME}
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_HOST: db
+      DB_PORT: 5432
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      REDIS_DB: 0
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/app
+      - static_volume:/app/staticfiles
+      - media_volume:/app/media
+    networks:
+      - 4work_network
+    depends_on:
+      - db
+      - redis
+
+volumes:
+  postgres_data:
+  redis_data:
+  static_volume:
+  media_volume:
+
+networks:
+  4work_network:
+    driver: bridge
