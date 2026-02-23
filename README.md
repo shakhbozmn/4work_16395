@@ -75,7 +75,7 @@ The platform features user authentication, project categorization, skill-based p
 
 1. **Clone the repository**
    ```bash
-   git clone [<repository-url>](https://github.com/shakhbozmn/4work_16395.git)
+   git clone https://github.com/shakhbozmn/4work_16395.git
    cd 4work_16395
    ```
 

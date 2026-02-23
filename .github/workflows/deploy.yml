@@ -30,8 +30,8 @@ jobs:
             docker-compose -f docker-compose.yml --env-file .env.production down &&
             docker-compose -f docker-compose.yml --env-file .env.production pull &&
             docker-compose -f docker-compose.yml --env-file .env.production up -d --build &&
-            docker-compose -f docker-compose.yml --env-file .env.production exec -T django python manage.py migrate --noinput &&
-            docker-compose -f docker-compose.yml --env-file .env.production exec -T django python manage.py collectstatic --noinput
+            docker-compose -f docker-compose.yml --env-file .env.production exec -T web python manage.py migrate --noinput &&
+            docker-compose -f docker-compose.yml --env-file .env.production exec -T web python manage.py collectstatic --noinput
 
       - name: Health check
         uses: appleboy/ssh-action@v1.0.0
@@ -41,4 +41,4 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
             curl -f https://dscc-shahbozms.polandcentral.cloudapp.azure.com/health || exit 1
-            
+
