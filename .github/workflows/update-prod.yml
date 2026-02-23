@@ -146,17 +146,17 @@ jobs:
             
             # Deploy with new containers
             echo "Deploying application..."
-            docker-compose -f docker-compose.yml --env-file .env.production down
-            docker-compose -f docker-compose.yml --env-file .env.production pull
-            docker-compose -f docker-compose.yml --env-file .env.production up -d --build
+            docker compose -f docker-compose.yml --env-file .env.production down
+            docker compose -f docker-compose.yml --env-file .env.production pull
+            docker compose -f docker-compose.yml --env-file .env.production up -d --build
             
             # Run migrations
             echo "Running migrations..."
-            docker-compose -f docker-compose.yml --env-file .env.production exec -T web python manage.py migrate --noinput
+            docker compose -f docker-compose.yml --env-file .env.production exec -T web python manage.py migrate --noinput
             
             # Collect static files
             echo "Collecting static files..."
-            docker-compose -f docker-compose.yml --env-file .env.production exec -T web python manage.py collectstatic --noinput
+            docker compose -f docker-compose.yml --env-file .env.production exec -T web python manage.py collectstatic --noinput
             
             # Clean up old images
             echo "Cleaning up old Docker images..."
@@ -205,8 +205,8 @@ jobs:
               cp $LATEST_BACKUP/.env.production .env.production
               cp $LATEST_BACKUP/docker-compose.yml docker-compose.yml
               
-              docker-compose -f docker-compose.yml --env-file .env.production down
-              docker-compose -f docker-compose.yml --env-file .env.production up -d
+              docker compose -f docker-compose.yml --env-file .env.production down
+              docker compose -f docker-compose.yml --env-file .env.production up -d
               
               echo "Rollback completed"
             else
