@@ -1,0 +1,66 @@
+[
+  {
+    "model": "marketplace.category",
+    "pk": 1,
+    "fields": {
+      "name": "Web Development",
+      "description": "Building and maintaining websites and web applications"
+    }
+  },
+  {
+    "model": "marketplace.category",
+    "pk": 2,
+    "fields": {
+      "name": "Mobile Development",
+      "description": "Developing mobile applications for iOS and Android"
+    }
+  },
+  {
+    "model": "marketplace.category",
+    "pk": 3,
+    "fields": {
+      "name": "UI/UX Design",
+      "description": "User interface and user experience design"
+    }
+  },
+  {
+    "model": "marketplace.category",
+    "pk": 4,
+    "fields": {
+      "name": "Data Science",
+      "description": "Data analysis, machine learning, and AI"
+    }
+  },
+  {
+    "model": "marketplace.category",
+    "pk": 5,
+    "fields": {
+      "name": "DevOps",
+      "description": "Development operations and infrastructure"
+    }
+  },
+  {
+    "model": "marketplace.category",
+    "pk": 6,
+    "fields": {
+      "name": "Content Writing",
+      "description": "Writing and editing content for various platforms"
+    }
+  },
+  {
+    "model": "marketplace.category",
+    "pk": 7,
+    "fields": {
+      "name": "Digital Marketing",
+      "description": "Online marketing and advertising"
+    }
+  },
+  {
+    "model": "marketplace.category",
+    "pk": 8,
+    "fields": {
+      "name": "Graphic Design",
+      "description": "Visual design and branding"
+    }
+  }
+]
