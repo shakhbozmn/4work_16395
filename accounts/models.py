@@ -5,23 +5,23 @@ from django.urls import reverse
 
 class User(AbstractUser):
     ROLE_CHOICES = (
-        ('client', 'Client'),
-        ('freelancer', 'Freelancer'),
+        ("client", "Client"),
+        ("freelancer", "Freelancer"),
     )
     role = models.CharField(max_length=20, choices=ROLE_CHOICES)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
-        ordering = ['-created_at']
-        verbose_name = 'User'
-        verbose_name_plural = 'Users'
+        ordering = ["-created_at"]
+        verbose_name = "User"
+        verbose_name_plural = "Users"
 
     def __str__(self):
         return self.username
 
     def get_absolute_url(self):
-        return reverse('accounts:profile_detail', kwargs={'username': self.username})
+        return reverse("accounts:profile_detail", kwargs={"username": self.username})
 
 
 class Skill(models.Model):
@@ -29,30 +29,34 @@ class Skill(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        ordering = ['name']
-        verbose_name = 'Skill'
-        verbose_name_plural = 'Skills'
+        ordering = ["name"]
+        verbose_name = "Skill"
+        verbose_name_plural = "Skills"
 
     def __str__(self):
         return self.name
 
 
 class Profile(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="profile")
     bio = models.TextField(blank=True)
-    hourly_rate = models.DecimalField(max_digits=8, decimal_places=2, null=True, blank=True)
-    skills = models.ManyToManyField(Skill, blank=True, related_name='profiles')
-    avatar = models.ImageField(upload_to='avatars/', blank=True, null=True)
+    hourly_rate = models.DecimalField(
+        max_digits=8, decimal_places=2, null=True, blank=True
+    )
+    skills = models.ManyToManyField(Skill, blank=True, related_name="profiles")
+    avatar = models.ImageField(upload_to="avatars/", blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
-        ordering = ['-created_at']
-        verbose_name = 'Profile'
-        verbose_name_plural = 'Profiles'
+        ordering = ["-created_at"]
+        verbose_name = "Profile"
+        verbose_name_plural = "Profiles"
 
     def __str__(self):
         return f"{self.user.username}'s Profile"
 
     def get_absolute_url(self):
-        return reverse('accounts:profile_detail', kwargs={'username': self.user.username})
+        return reverse(
+            "accounts:profile_detail", kwargs={"username": self.user.username}
+        )

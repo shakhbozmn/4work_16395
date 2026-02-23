@@ -12,10 +12,4 @@ class HealthCheckView(View):
     """
 
     def get(self, request):
-        return JsonResponse(
-            {
-                'status': 'healthy',
-                'service': '4work'
-            },
-            status=200
-        )
+        return JsonResponse({"status": "healthy", "service": "4work"}, status=200)

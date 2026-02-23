@@ -1,6 +1,7 @@
-from django.test import TestCase
 from django.contrib.auth import get_user_model
-from accounts.models import User, Profile, Skill
+from django.test import TestCase
+
+from accounts.models import Skill
 
 User = get_user_model()
 
@@ -10,35 +11,33 @@ class UserModelTest(TestCase):
 
     def setUp(self):
         self.user = User.objects.create_user(
-            username='testuser',
-            email='test@example.com',
-            password='testpass123'
+            username="testuser", email="test@example.com", password="testpass123"
         )
 
     def test_user_creation(self):
         """Test that a user can be created successfully"""
-        self.assertEqual(self.user.username, 'testuser')
-        self.assertEqual(self.user.email, 'test@example.com')
-        self.assertTrue(self.user.check_password('testpass123'))
+        self.assertEqual(self.user.username, "testuser")
+        self.assertEqual(self.user.email, "test@example.com")
+        self.assertTrue(self.user.check_password("testpass123"))
 
     def test_user_str_method(self):
         """Test the __str__ method of User model"""
-        self.assertEqual(str(self.user), 'testuser')
+        self.assertEqual(str(self.user), "testuser")
 
     def test_user_role_choices(self):
         """Test that role choices are valid"""
         user_client = User.objects.create_user(
-            username='clientuser',
-            email='client@example.com',
-            password='testpass123',
-            role='client'
+            username="clientuser",
+            email="client@example.com",
+            password="testpass123",
+            role="client",
         )
-        self.assertEqual(user_client.role, 'client')
+        self.assertEqual(user_client.role, "client")
 
     def test_get_absolute_url(self):
         """Test get_absolute_url method"""
         url = self.user.get_absolute_url()
-        self.assertEqual(url, f'/accounts/profile/{self.user.username}/')
+        self.assertEqual(url, f"/accounts/profile/{self.user.username}/")
 
 
 class ProfileModelTest(TestCase):
@@ -46,15 +45,13 @@ class ProfileModelTest(TestCase):
 
     def setUp(self):
         self.user = User.objects.create_user(
-            username='testuser',
-            email='test@example.com',
-            password='testpass123'
+            username="testuser", email="test@example.com", password="testpass123"
         )
-        self.skill = Skill.objects.create(name='Python')
+        self.skill = Skill.objects.create(name="Python")
 
     def test_profile_auto_creation(self):
         """Test that profile is automatically created with user"""
-        self.assertTrue(hasattr(self.user, 'profile'))
+        self.assertTrue(hasattr(self.user, "profile"))
         self.assertEqual(self.user.profile.user, self.user)
 
     def test_profile_str_method(self):
@@ -85,12 +82,12 @@ class SkillModelTest(TestCase):
     """Test cases for Skill model"""
 
     def setUp(self):
-        self.skill = Skill.objects.create(name='Python')
+        self.skill = Skill.objects.create(name="Python")
 
     def test_skill_creation(self):
         """Test that a skill can be created successfully"""
-        self.assertEqual(self.skill.name, 'Python')
+        self.assertEqual(self.skill.name, "Python")
 
     def test_skill_str_method(self):
         """Test the __str__ method of Skill model"""
-        self.assertEqual(str(self.skill), 'Python')
+        self.assertEqual(str(self.skill), "Python")
