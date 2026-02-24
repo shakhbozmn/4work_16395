@@ -3,8 +3,11 @@ from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse_lazy
+from django.views.decorators.http import require_POST
 from django.views.generic import CreateView
 from django.views.generic.base import View
+
+from marketplace.models import Application, Project
 
 from .forms import CustomAuthenticationForm, CustomUserCreationForm, ProfileForm
 from .models import Profile, User
@@ -14,7 +17,7 @@ class RegisterView(CreateView):
     model = User
     form_class = CustomUserCreationForm
     template_name = "auth/register.html"
-    success_url = reverse_lazy("accounts:login")
+    success_url = reverse_lazy("accounts:dashboard")
 
     def form_valid(self, form):
         response = super().form_valid(form)
@@ -35,13 +38,14 @@ class LoginView(View):
         if form.is_valid():
             login(request, form.get_user())
             messages.success(request, "Login successful!")
-            next_url = request.GET.get("next", reverse_lazy("home"))
+            next_url = request.GET.get("next") or reverse_lazy("accounts:dashboard")
             return redirect(next_url)
         return render(request, "auth/login.html", {"form": form})
 
 
 class LogoutView(View):
-    def get(self, request):
+    @require_POST
+    def post(self, request):
         logout(request)
         messages.success(request, "You have been logged out.")
         return redirect("accounts:login")
@@ -56,6 +60,49 @@ def profile_detail(request, username):
         "profile": profile,
     }
     return render(request, "accounts/profile_detail.html", context)
+
+
+@login_required
+def dashboard(request):
+    """Role-based dashboard: clients see their projects; freelancers see their applications."""
+    if request.user.role == "client":
+        projects = Project.objects.filter(client=request.user).order_by("-created_at")
+        pending_applications = Application.objects.filter(
+            project__client=request.user, status="pending"
+        ).count()
+        stats = {
+            "total_projects": projects.count(),
+            "active_projects": projects.filter(
+                status__in=["open", "reviewing", "assigned"]
+            ).count(),
+            "pending_applications": pending_applications,
+            "total_spent": sum(
+                p.budget
+                for p in projects.filter(status="completed")
+            ),
+        }
+        return render(
+            request,
+            "dashboard/client_dashboard.html",
+            {"recent_projects": projects[:10], "stats": stats},
+        )
+    else:
+        applications = Application.objects.filter(
+            freelancer=request.user
+        ).select_related("project").order_by("-created_at")
+        stats = {
+            "total_applications": applications.count(),
+            "accepted_applications": applications.filter(status="accepted").count(),
+            "active_jobs": applications.filter(
+                status="accepted", project__status="assigned"
+            ).count(),
+            "total_earned": 0,  # placeholder — no payment model yet
+        }
+        return render(
+            request,
+            "dashboard/freelancer_dashboard.html",
+            {"recent_applications": applications[:10], "stats": stats},
+        )
 
 
 @login_required

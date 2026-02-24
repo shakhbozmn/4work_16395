@@ -1,8 +1,12 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.db.models import Q
+from django.http import HttpResponseForbidden
 from django.shortcuts import get_object_or_404, redirect, render
+from django.views.decorators.http import require_POST
 from django.views.generic import DetailView, ListView
+
+from accounts.models import Skill
 
 from .forms import ApplicationForm, ProjectForm
 from .models import Application, Category, Project
@@ -68,6 +72,8 @@ class ProjectDetailView(DetailView):
 
 @login_required
 def project_create(request):
+    if request.user.role != "client":
+        return HttpResponseForbidden("Only clients can create projects.")
     if request.method == "POST":
         form = ProjectForm(request.POST)
         if form.is_valid():
@@ -195,6 +201,7 @@ def application_create(request, project_pk):
 
 
 @login_required
+@require_POST
 def application_accept(request, pk):
     application = get_object_or_404(Application, pk=pk)
     project = application.project
@@ -227,6 +234,7 @@ def application_accept(request, pk):
 
 
 @login_required
+@require_POST
 def application_reject(request, pk):
     application = get_object_or_404(Application, pk=pk)
     project = application.project
@@ -243,3 +251,37 @@ def application_reject(request, pk):
 
     messages.success(request, "Application rejected.")
     return redirect("marketplace:project_detail", pk=project.pk)
+
+
+@login_required
+def application_list(request):
+    """Show applications: received (client) or submitted (freelancer)."""
+    status_filter = request.GET.get("status", "")
+
+    if request.user.role == "client":
+        applications = Application.objects.filter(
+            project__client=request.user
+        ).select_related("freelancer", "project")
+    else:
+        applications = Application.objects.filter(
+            freelancer=request.user
+        ).select_related("project", "project__client")
+
+    if status_filter:
+        applications = applications.filter(status=status_filter)
+
+    return render(
+        request,
+        "marketplace/application_list.html",
+        {
+            "applications": applications,
+            "status_filter": status_filter,
+        },
+    )
+
+
+class SkillListView(ListView):
+    model = Skill
+    template_name = "marketplace/skill_list.html"
+    context_object_name = "skills"
+    queryset = Skill.objects.all().order_by("name")

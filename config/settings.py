@@ -126,18 +126,23 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 # Custom User Model
 AUTH_USER_MODEL = "accounts.User"
 
+# Authentication redirects
+LOGIN_URL = "/accounts/login/"
+LOGIN_REDIRECT_URL = "/accounts/dashboard/"
+LOGOUT_REDIRECT_URL = "/accounts/login/"
+
 # CORS Settings
 if DEBUG:
     CORS_ALLOW_ALL_ORIGINS = True
 else:
     cors_origins = os.getenv("CORS_ALLOWED_ORIGINS", "")
     csrf_origins = os.getenv("CSRF_TRUSTED_ORIGINS", "")
-    
+
     if cors_origins:
         CORS_ALLOWED_ORIGINS = [origin.strip() for origin in cors_origins.split(",") if origin.strip()]
     else:
         CORS_ALLOW_ALL_ORIGINS = False  # More secure default
-        
+
     if csrf_origins:
         CSRF_TRUSTED_ORIGINS = [origin.strip() for origin in csrf_origins.split(",") if origin.strip()]
     else:

@@ -98,4 +98,4 @@ class Application(models.Model):
         return f"{self.freelancer.username} - {self.project.title}"
 
     def get_absolute_url(self):
-        return reverse("marketplace:application_detail", kwargs={"pk": self.pk})
+        return reverse("marketplace:project_detail", kwargs={"pk": self.project_id})

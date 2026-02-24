@@ -32,4 +32,7 @@ urlpatterns = [
         views.application_reject,
         name="application_reject",
     ),
+    path("applications/", views.application_list, name="application_list"),
+    # Skills
+    path("skills/", views.SkillListView.as_view(), name="skill_list"),
 ]
