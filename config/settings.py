@@ -25,7 +25,13 @@ SECRET_KEY = os.getenv("SECRET_KEY", "django-insecure-dev-key-change-in-producti
 if DEBUG:
     ALLOWED_HOSTS = ["localhost", "127.0.0.1", "[::1]"]
 else:
-    ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "").split(",")
+    allowed_hosts_str = os.getenv("ALLOWED_HOSTS", "")
+    if not allowed_hosts_str:
+        raise ValueError(
+            "ALLOWED_HOSTS environment variable must be set in production. "
+            "Example: ALLOWED_HOSTS=your-domain.com,www.your-domain.com"
+        )
+    ALLOWED_HOSTS = [host.strip() for host in allowed_hosts_str.split(",") if host.strip()]
 
 # Application definition
 INSTALLED_APPS = [
@@ -124,12 +130,23 @@ AUTH_USER_MODEL = "accounts.User"
 if DEBUG:
     CORS_ALLOW_ALL_ORIGINS = True
 else:
-    CORS_ALLOWED_ORIGINS = os.getenv("CORS_ALLOWED_ORIGINS", "").split(",")
-    CSRF_TRUSTED_ORIGINS = os.getenv("CSRF_TRUSTED_ORIGINS", "").split(",")
+    cors_origins = os.getenv("CORS_ALLOWED_ORIGINS", "")
+    csrf_origins = os.getenv("CSRF_TRUSTED_ORIGINS", "")
+    
+    if cors_origins:
+        CORS_ALLOWED_ORIGINS = [origin.strip() for origin in cors_origins.split(",") if origin.strip()]
+    else:
+        CORS_ALLOW_ALL_ORIGINS = False  # More secure default
+        
+    if csrf_origins:
+        CSRF_TRUSTED_ORIGINS = [origin.strip() for origin in csrf_origins.split(",") if origin.strip()]
+    else:
+        CSRF_TRUSTED_ORIGINS = []
 
 # Security Settings
 if IS_PRODUCTION:
-    # Nginx handles HTTP→HTTPS redirect; Django trusts the X-Forwarded-Proto header
+    # Nginx handles HTTP→HTTPS redirect; Django should NOT redirect
+    SECURE_SSL_REDIRECT = False  # Nginx handles this
     SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
     SESSION_COOKIE_SECURE = True
     CSRF_COOKIE_SECURE = True
@@ -139,6 +156,9 @@ if IS_PRODUCTION:
     SECURE_HSTS_SECONDS = 31536000
     SECURE_HSTS_INCLUDE_SUBDOMAINS = True
     SECURE_HSTS_PRELOAD = True
+    # Ensure redirects work properly behind proxy
+    USE_X_FORWARDED_HOST = True
+    USE_X_FORWARDED_PORT = True
 
 # Email Configuration
 if DEBUG:
