@@ -146,6 +146,8 @@ else:
 # Security Settings - Nginx handles HTTPS, so NEVER let Django redirect
 SECURE_SSL_REDIRECT = False  # CRITICAL: Nginx handles this, not Django
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+PREPEND_WWW = False  # Don't redirect to www
+APPEND_SLASH = True  # Default, but explicit
 
 if IS_PRODUCTION:
     SESSION_COOKIE_SECURE = True
