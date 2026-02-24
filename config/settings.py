@@ -22,8 +22,12 @@ IS_PRODUCTION = not DEBUG
 SECRET_KEY = os.getenv("SECRET_KEY", "django-insecure-dev-key-change-in-production")
 
 # Allowed hosts
+# localhost/127.0.0.1 are always included — required for Docker health checks
+# and Nginx → Gunicorn internal communication
+_ALWAYS_ALLOWED = ["localhost", "127.0.0.1", "[::1]"]
+
 if DEBUG:
-    ALLOWED_HOSTS = ["localhost", "127.0.0.1", "[::1]"]
+    ALLOWED_HOSTS = _ALWAYS_ALLOWED
 else:
     allowed_hosts_str = os.getenv("ALLOWED_HOSTS", "")
     if not allowed_hosts_str:
@@ -31,7 +35,9 @@ else:
             "ALLOWED_HOSTS environment variable must be set in production. "
             "Example: ALLOWED_HOSTS=your-domain.com,www.your-domain.com"
         )
-    ALLOWED_HOSTS = [host.strip() for host in allowed_hosts_str.split(",") if host.strip()]
+    ALLOWED_HOSTS = _ALWAYS_ALLOWED + [
+        host.strip() for host in allowed_hosts_str.split(",") if host.strip()
+    ]
 
 # Application definition
 INSTALLED_APPS = [
