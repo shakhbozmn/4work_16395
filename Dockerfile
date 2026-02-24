@@ -1,91 +1,61 @@
-# Stage 1: Builder
-FROM python:3.12-slim as builder
+# Stage 1: Builder - compile dependencies
+FROM python:3.12-slim AS builder
 
-# Set environment variables
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 
-# Set working directory
 WORKDIR /app
 
-# Install system dependencies
+# Build dependencies only (gcc needed to compile psycopg2 and other C extensions)
 RUN apt-get update && apt-get install -y \
     gcc \
-    postgresql-client \
     libpq-dev \
     && rm -rf /var/lib/apt/lists/*
 
-# Copy requirements file
 COPY requirements.txt .
 
-# Install Python dependencies
 RUN pip install --no-cache-dir --upgrade pip && \
     pip install --no-cache-dir -r requirements.txt
 
-# Copy application code
-COPY . .
-
-# Stage 2: Production
+# Stage 2: Production - lean runtime image
 FROM python:3.12-slim
 
-# Set environment variables
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 
-# Create a non-root user
+# Create non-root user
 RUN groupadd -r appuser && useradd -r -g appuser appuser
 
-# Set working directory
 WORKDIR /app
 
-# Install system dependencies for production
+# Runtime dependencies only (no gcc)
 RUN apt-get update && apt-get install -y \
-    gcc \
     libpq-dev \
+    postgresql-client \
     curl \
     && rm -rf /var/lib/apt/lists/*
 
-# Copy Python dependencies from builder
+# Copy compiled Python packages and binaries from builder
 COPY --from=builder /usr/local/lib/python3.12/site-packages /usr/local/lib/python3.12/site-packages
 COPY --from=builder /usr/local/bin /usr/local/bin
 
 # Copy application code
 COPY --chown=appuser:appuser . .
 
-# Create directories for static and media files
+# Copy and set up entrypoint
+COPY --chown=appuser:appuser entrypoint.sh /app/entrypoint.sh
+RUN chmod +x /app/entrypoint.sh
+
+# Create static and media dirs
 RUN mkdir -p /app/staticfiles /app/media && \
     chown -R appuser:appuser /app/staticfiles /app/media
-
-# Collect static files (as root before user switch)
-RUN python manage.py collectstatic --noinput
-
-# Create entrypoint script (as root before user switch)
-RUN mkdir -p /app/bin && \
-    echo '#!/bin/sh' > /app/bin/entrypoint.sh && \
-    echo 'set -e' >> /app/bin/entrypoint.sh && \
-    echo '' >> /app/bin/entrypoint.sh && \
-    echo 'echo "=== Gunicorn Diagnostic Info ==="' >> /app/bin/entrypoint.sh && \
-    echo 'echo "Gunicorn version:"' >> /app/bin/entrypoint.sh && \
-    echo 'gunicorn --version' >> /app/bin/entrypoint.sh && \
-    echo 'echo "Entrypoint script location: $0"' >> /app/bin/entrypoint.sh && \
-    echo 'echo "=== End Diagnostic Info ==="' >> /app/bin/entrypoint.sh && \
-    echo '' >> /app/bin/entrypoint.sh && \
-    echo 'echo "Executing gunicorn with command:"' >> /app/bin/entrypoint.sh && \
-    echo 'echo "gunicorn config.wsgi:application --bind 0.0.0.0:8000 --workers 3 --timeout 120 --worker-tmp-dir /dev/shm --access-logfile - --error-logfile - --preload"' >> /app/bin/entrypoint.sh && \
-    echo '' >> /app/bin/entrypoint.sh && \
-    echo 'exec gunicorn config.wsgi:application --bind 0.0.0.0:8000 --workers 3 --timeout 120 --worker-tmp-dir /dev/shm --access-logfile - --error-logfile - --preload' >> /app/bin/entrypoint.sh && \
-    chmod +x /app/bin/entrypoint.sh && \
-    chown appuser:appuser /app/bin/entrypoint.sh
 
 # Switch to non-root user
 USER appuser
 
-# Expose port
 EXPOSE 8000
 
-# Health check
-HEALTHCHECK --interval=30s --timeout=30s --start-period=10s --retries=3 \
+HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
     CMD curl -f http://localhost:8000/health/ || exit 1
 
-ENTRYPOINT ["/app/bin/entrypoint.sh"]
-
+ENTRYPOINT ["/app/entrypoint.sh"]

@@ -129,7 +129,8 @@ else:
 
 # Security Settings
 if IS_PRODUCTION:
-    SECURE_SSL_REDIRECT = True
+    # Nginx handles HTTP→HTTPS redirect; Django trusts the X-Forwarded-Proto header
+    SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
     SESSION_COOKIE_SECURE = True
     CSRF_COOKIE_SECURE = True
     SECURE_BROWSER_XSS_FILTER = True
@@ -159,7 +160,8 @@ CACHES = {
 }
 
 # Session Configuration
-SESSION_ENGINE = "django.contrib.sessions.backends.cache"
+# Use cached_db so sessions persist across multiple Gunicorn workers
+SESSION_ENGINE = "django.contrib.sessions.backends.cached_db"
 SESSION_CACHE_ALIAS = "default"
 
 # Application Settings
