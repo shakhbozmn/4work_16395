@@ -63,6 +63,16 @@ RUN python manage.py collectstatic --noinput
 RUN mkdir -p /app/bin && \
     echo '#!/bin/sh' > /app/bin/entrypoint.sh && \
     echo 'set -e' >> /app/bin/entrypoint.sh && \
+    echo '' >> /app/bin/entrypoint.sh && \
+    echo 'echo "=== Gunicorn Diagnostic Info ==="' >> /app/bin/entrypoint.sh && \
+    echo 'echo "Gunicorn version:"' >> /app/bin/entrypoint.sh && \
+    echo 'gunicorn --version' >> /app/bin/entrypoint.sh && \
+    echo 'echo "Entrypoint script location: $0"' >> /app/bin/entrypoint.sh && \
+    echo 'echo "=== End Diagnostic Info ==="' >> /app/bin/entrypoint.sh && \
+    echo '' >> /app/bin/entrypoint.sh && \
+    echo 'echo "Executing gunicorn with command:"' >> /app/bin/entrypoint.sh && \
+    echo 'echo "gunicorn config.wsgi:application --bind 0.0.0.0:8000 --workers 3 --timeout 120 --worker-tmp-dir /dev/shm --access-logfile - --error-logfile - --preload"' >> /app/bin/entrypoint.sh && \
+    echo '' >> /app/bin/entrypoint.sh && \
     echo 'exec gunicorn config.wsgi:application --bind 0.0.0.0:8000 --workers 3 --timeout 120 --worker-tmp-dir /dev/shm --access-logfile - --error-logfile - --preload' >> /app/bin/entrypoint.sh && \
     chmod +x /app/bin/entrypoint.sh && \
     chown appuser:appuser /app/bin/entrypoint.sh
