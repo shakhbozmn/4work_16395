@@ -143,11 +143,11 @@ else:
     else:
         CSRF_TRUSTED_ORIGINS = []
 
-# Security Settings
+# Security Settings - Nginx handles HTTPS, so NEVER let Django redirect
+SECURE_SSL_REDIRECT = False  # CRITICAL: Nginx handles this, not Django
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+
 if IS_PRODUCTION:
-    # Nginx handles HTTP→HTTPS redirect; Django should NOT redirect
-    SECURE_SSL_REDIRECT = False  # Nginx handles this
-    SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
     SESSION_COOKIE_SECURE = True
     CSRF_COOKIE_SECURE = True
     SECURE_BROWSER_XSS_FILTER = True
