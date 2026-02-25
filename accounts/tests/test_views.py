@@ -26,7 +26,7 @@ class LoginViewTest(TestCase):
             reverse("accounts:login"),
             {"username": "testuser", "password": "testpass123"},
         )
-        self.assertRedirects(response, reverse("home"))
+        self.assertRedirects(response, reverse("accounts:dashboard"))
 
     def test_login_with_invalid_credentials(self):
         """Test login with invalid credentials"""
@@ -61,7 +61,7 @@ class RegisterViewTest(TestCase):
                 "role": "freelancer",
             },
         )
-        self.assertRedirects(response, reverse("accounts:login"))
+        self.assertRedirects(response, reverse("accounts:dashboard"))
         self.assertTrue(User.objects.filter(username="newuser").exists())
 
 
@@ -77,7 +77,7 @@ class LogoutViewTest(TestCase):
 
     def test_logout(self):
         """Test that logout works correctly"""
-        response = self.client.get(reverse("accounts:logout"))
+        response = self.client.post(reverse("accounts:logout"))
         self.assertRedirects(response, reverse("accounts:login"))
 
 

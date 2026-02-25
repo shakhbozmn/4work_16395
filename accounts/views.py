@@ -3,7 +3,6 @@ from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse_lazy
-from django.views.decorators.http import require_POST
 from django.views.generic import CreateView
 from django.views.generic.base import View
 
@@ -44,7 +43,6 @@ class LoginView(View):
 
 
 class LogoutView(View):
-    @require_POST
     def post(self, request):
         logout(request)
         messages.success(request, "You have been logged out.")
@@ -81,10 +79,15 @@ def dashboard(request):
                 for p in projects.filter(status="completed")
             ),
         }
+        recent_applications = (
+            Application.objects.filter(project__client=request.user)
+            .select_related("freelancer", "project")
+            .order_by("-created_at")[:10]
+        )
         return render(
             request,
             "dashboard/client_dashboard.html",
-            {"recent_projects": projects[:10], "stats": stats},
+            {"recent_projects": projects[:10], "stats": stats, "recent_applications": recent_applications},
         )
     else:
         applications = Application.objects.filter(

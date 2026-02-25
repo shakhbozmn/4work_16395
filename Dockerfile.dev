@@ -1,33 +1,45 @@
-# Development Dockerfile - Simplified for faster builds and lower memory usage
-FROM python:3.12-slim
+# Stage 1: Builder - Install dependencies only
+FROM python:3.12-slim AS builder
 
-# Set environment variables
-ENV PYTHONDONTWRITEBYTECODE=1
-ENV PYTHONUNBUFFERED=1
-
-# Set working directory
 WORKDIR /app
 
-# Install system dependencies (minimal - no gcc needed for development)
-RUN apt-get update && apt-get install -y \
+# Install build dependencies in a single layer
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    gcc \
+    libpq-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+# Create virtual environment
+RUN python -m venv /opt/venv
+ENV PATH="/opt/venv/bin:$PATH"
+
+# Copy and install dependencies (cached layer)
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Stage 2: Development - Lightweight runtime
+FROM python:3.12-slim AS development
+
+# Set environment variables
+ENV PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1 \
+    PATH="/opt/venv/bin:$PATH"
+
+WORKDIR /app
+
+# Install only runtime dependencies (cached layer)
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    libpq5 \
     postgresql-client \
     && rm -rf /var/lib/apt/lists/*
 
-# Copy requirements file
-COPY requirements.txt .
+# Copy virtual environment from builder (cached layer)
+COPY --from=builder /opt/venv /opt/venv
 
-# Install Python dependencies
-RUN pip install --no-cache-dir --upgrade pip && \
-    pip install --no-cache-dir -r requirements.txt
+# Note: Project files are mounted via docker-compose volume for hot reload
+# Only create necessary directories
+RUN mkdir -p staticfiles media
 
-# Copy application code
-COPY . .
-
-# Create directories for static and media files
-RUN mkdir -p /app/staticfiles /app/media
-
-# Expose port
 EXPOSE 8000
 
-# Run Django development server
 CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]

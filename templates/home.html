@@ -1,38 +1,36 @@
 {% extends 'base.html' %}
 
-{% block title %}Home - 4work{% endblock %}
+{% block title %}4work — Freelance Marketplace{% endblock %}
 
 {% block content %}
-<div class="text-center py-16">
-    <h1 class="text-5xl font-bold text-gray-800 mb-4">Find Your Next Project or Freelancer</h1>
-    <p class="text-xl text-gray-600 mb-8">Connect with talented freelancers and find the perfect project for your skills</p>
-    
-    <div class="flex justify-center space-x-4">
-        <a href="{% url 'marketplace:project_list' %}" 
-           class="bg-indigo-600 text-white px-8 py-3 rounded-lg hover:bg-indigo-700 transition font-medium text-lg">
-            Browse Projects
-        </a>
+<div class="py-20 text-center">
+    <p class="text-xs font-medium tracking-widest text-indigo-500 uppercase mb-4">Freelance Marketplace</p>
+    <h1 class="text-4xl sm:text-5xl font-700 text-gray-900 leading-tight mb-5">
+        Find work.<br>Hire talent.
+    </h1>
+    <p class="text-gray-500 text-lg mb-10 max-w-md mx-auto">
+        A simple, no-noise marketplace connecting clients with skilled freelancers.
+    </p>
+    <div class="flex justify-center gap-3">
+        <a href="{% url 'marketplace:project_list' %}" class="btn-primary">Browse projects</a>
         {% if not user.is_authenticated %}
-            <a href="{% url 'accounts:register' %}" 
-               class="bg-green-600 text-white px-8 py-3 rounded-lg hover:bg-green-700 transition font-medium text-lg">
-                Join as Freelancer
-            </a>
+            <a href="{% url 'accounts:register' %}" class="btn-ghost">Create account</a>
         {% endif %}
     </div>
 </div>
 
-<div class="grid grid-cols-1 md:grid-cols-3 gap-8 mt-16">
-    <div class="bg-white rounded-lg shadow-lg p-6 text-center">
-        <div class="text-4xl font-bold text-indigo-600 mb-2">500+</div>
-        <div class="text-gray-600">Active Projects</div>
+<div class="border-t border-gray-100 pt-10 grid grid-cols-3 gap-px bg-gray-100 rounded-lg overflow-hidden">
+    <div class="bg-white px-6 py-8 text-center">
+        <p class="text-3xl font-700 text-gray-900">500+</p>
+        <p class="text-sm text-gray-500 mt-1">Active projects</p>
     </div>
-    <div class="bg-white rounded-lg shadow-lg p-6 text-center">
-        <div class="text-4xl font-bold text-indigo-600 mb-2">1000+</div>
-        <div class="text-gray-600">Freelancers</div>
+    <div class="bg-white px-6 py-8 text-center">
+        <p class="text-3xl font-700 text-gray-900">1,000+</p>
+        <p class="text-sm text-gray-500 mt-1">Freelancers</p>
     </div>
-    <div class="bg-white rounded-lg shadow-lg p-6 text-center">
-        <div class="text-4xl font-bold text-indigo-600 mb-2">50+</div>
-        <div class="text-gray-600">Categories</div>
+    <div class="bg-white px-6 py-8 text-center">
+        <p class="text-3xl font-700 text-gray-900">50+</p>
+        <p class="text-sm text-gray-500 mt-1">Categories</p>
     </div>
 </div>
 {% endblock %}

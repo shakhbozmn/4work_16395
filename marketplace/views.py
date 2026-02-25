@@ -1,5 +1,6 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.db import transaction
 from django.db.models import Q
 from django.http import HttpResponseForbidden
 from django.shortcuts import get_object_or_404, redirect, render
@@ -217,17 +218,15 @@ def application_accept(request, pk):
         messages.error(request, "This project is no longer accepting applications.")
         return redirect("marketplace:project_detail", pk=project.pk)
 
-    # Accept application
-    application.status = "accepted"
-    application.save()
+    with transaction.atomic():
+        application.status = "accepted"
+        application.save()
 
-    # Update project
-    project.assigned_freelancer = application.freelancer
-    project.status = "assigned"
-    project.save()
+        project.assigned_freelancer = application.freelancer
+        project.status = "assigned"
+        project.save()
 
-    # Reject other applications
-    project.applications.exclude(pk=pk).update(status="rejected")
+        project.applications.exclude(pk=pk).update(status="rejected")
 
     messages.success(request, "Application accepted successfully!")
     return redirect("marketplace:project_detail", pk=project.pk)
@@ -270,12 +269,23 @@ def application_list(request):
     if status_filter:
         applications = applications.filter(status=status_filter)
 
+    project_filter = request.GET.get("project", "")
+    if project_filter and request.user.role == "client":
+        applications = applications.filter(project_id=project_filter)
+
+    user_projects = (
+        Project.objects.filter(client=request.user)
+        if request.user.role == "client"
+        else Project.objects.none()
+    )
+
     return render(
         request,
         "marketplace/application_list.html",
         {
             "applications": applications,
             "status_filter": status_filter,
+            "user_projects": user_projects,
         },
     )
 

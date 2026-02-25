@@ -3,45 +3,134 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}4work - Freelance Job Marketplace{% endblock %}</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-        body {
-            font-family: 'Inter', sans-serif;
+    <title>{% block title %}4work - Freelance Marketplace{% endblock %}</title>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    keyframes: {
+                        fadeSlideIn: {
+                            '0%':   { opacity: '0', transform: 'translateY(12px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                        },
+                        fadeSlideDown: {
+                            '0%':   { opacity: '0', transform: 'translateY(-8px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                        },
+                    },
+                    animation: {
+                        'fade-in':   'fadeSlideIn 0.35s ease both',
+                        'fade-in-1': 'fadeSlideIn 0.35s 0.05s ease both',
+                        'fade-in-2': 'fadeSlideIn 0.35s 0.10s ease both',
+                        'fade-in-3': 'fadeSlideIn 0.35s 0.15s ease both',
+                        'fade-in-4': 'fadeSlideIn 0.35s 0.20s ease both',
+                        'fade-in-5': 'fadeSlideIn 0.35s 0.25s ease both',
+                        'fade-down': 'fadeSlideDown 0.3s ease both',
+                    },
+                }
+            }
         }
+    </script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;600;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'DM Sans', sans-serif; }
+        h1, h2, h3, .font-display { font-family: 'Bricolage Grotesque', sans-serif; }
+        .input-base {
+            width: 100%;
+            padding: 0.5rem 0.75rem;
+            border: 1px solid #e5e7eb;
+            border-radius: 0.375rem;
+            font-size: 0.875rem;
+            outline: none;
+            transition: border-color 0.15s;
+        }
+        .input-base:focus { border-color: #6366f1; box-shadow: 0 0 0 3px rgba(99,102,241,0.1); }
+        .btn-primary {
+            display: inline-flex; align-items: center; justify-content: center;
+            padding: 0.5rem 1rem;
+            background: #4f46e5; color: white;
+            border-radius: 0.375rem; font-size: 0.875rem; font-weight: 500;
+            transition: background 0.15s;
+            text-decoration: none;
+        }
+        .btn-primary:hover { background: #4338ca; }
+        .btn-ghost {
+            display: inline-flex; align-items: center; justify-content: center;
+            padding: 0.5rem 1rem;
+            color: #374151; border: 1px solid #e5e7eb;
+            border-radius: 0.375rem; font-size: 0.875rem; font-weight: 500;
+            transition: background 0.15s;
+            text-decoration: none;
+        }
+        .btn-ghost:hover { background: #f9fafb; }
+        .card { background: white; border: 1px solid #e5e7eb; border-radius: 0.5rem; }
+        .status-open    { color: #16a34a; background: #f0fdf4; border: 1px solid #bbf7d0; }
+        .status-reviewing { color: #d97706; background: #fffbeb; border: 1px solid #fde68a; }
+        .status-assigned { color: #2563eb; background: #eff6ff; border: 1px solid #bfdbfe; }
+        .status-completed { color: #6b7280; background: #f9fafb; border: 1px solid #e5e7eb; }
+        .status-pending  { color: #d97706; background: #fffbeb; border: 1px solid #fde68a; }
+        .status-accepted { color: #16a34a; background: #f0fdf4; border: 1px solid #bbf7d0; }
+        .status-rejected { color: #dc2626; background: #fef2f2; border: 1px solid #fecaca; }
     </style>
 </head>
-<body class="bg-gray-50 min-h-screen">
+<body class="bg-white min-h-screen text-gray-900">
     {% include 'components/navbar.html' %}
-    
-    <main class="container mx-auto px-4 py-8">
+
+    <main class="max-w-5xl mx-auto px-4 sm:px-6 py-10 h-full ">
         {% if messages %}
             <div class="mb-6 space-y-2">
                 {% for message in messages %}
-                    <div class="px-4 py-3 rounded-lg {% if message.tags %}bg-{{ message.tags }}-100 text-{{ message.tags }}-800 border border-{{ message.tags }}-200{% endif %}">
+                    <div class="px-4 py-2.5 rounded-md text-sm border
+                        {% if 'error' in message.tags %}bg-red-50 text-red-700 border-red-200
+                        {% elif 'success' in message.tags %}bg-green-50 text-green-700 border-green-200
+                        {% elif 'warning' in message.tags %}bg-yellow-50 text-yellow-700 border-yellow-200
+                        {% else %}bg-gray-50 text-gray-700 border-gray-200{% endif %}">
                         {{ message }}
                     </div>
                 {% endfor %}
             </div>
         {% endif %}
-        
+
         {% block content %}{% endblock %}
     </main>
-    
+
     {% include 'components/footer.html' %}
-    
+
     <script>
-        // Theme toggle functionality
-        function toggleTheme() {
-            document.documentElement.classList.toggle('dark');
-            localStorage.setItem('theme', document.documentElement.classList.contains('dark') ? 'dark' : 'light');
+        // Mobile nav toggle
+        const menuBtn = document.getElementById('mobile-menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+        if (menuBtn && mobileMenu) {
+            menuBtn.addEventListener('click', () => mobileMenu.classList.toggle('hidden'));
         }
-        
-        // Load saved theme
-        if (localStorage.getItem('theme') === 'dark' || (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-            document.documentElement.classList.add('dark');
-        }
+
+        // Global: input icon focus colour
+        document.addEventListener('focusin', function (e) {
+            if (e.target.matches('.input-base')) {
+                const icon = e.target.closest('.relative')?.querySelector('.field-icon, .field-icon-top');
+                if (icon) { icon.style.color = '#6366f1'; }
+            }
+        });
+        document.addEventListener('focusout', function (e) {
+            if (e.target.matches('.input-base')) {
+                const icon = e.target.closest('.relative')?.querySelector('.field-icon, .field-icon-top');
+                if (icon) { icon.style.color = ''; }
+            }
+        });
+
+        // Global: smooth page-leave transition
+        document.addEventListener('click', function (e) {
+            const a = e.target.closest('a[href]');
+            if (!a) return;
+            const href = a.getAttribute('href');
+            if (!href || href.startsWith('#') || href.startsWith('javascript') || a.target === '_blank') return;
+            e.preventDefault();
+            document.body.style.transition = 'opacity 0.18s ease';
+            document.body.style.opacity = '0';
+            setTimeout(() => { window.location.href = href; }, 180);
+        });
     </script>
 </body>
 </html>
