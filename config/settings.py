@@ -163,12 +163,12 @@ PREPEND_WWW = False
 # Set to False if 301 redirects are problematic
 APPEND_SLASH = True
 
-# Tell Django to trust the X-Forwarded-Proto header from nginx/Azure LB
-# This is CRITICAL for proper protocol detection behind a reverse proxy
-SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
-
 # Production security settings (but NO SSL redirects - Azure handles that)
 if IS_PRODUCTION:
+    # Tell Django to trust the X-Forwarded-Proto header from nginx/Azure LB
+    # This is CRITICAL for proper protocol detection behind a reverse proxy
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+    
     # Explicitly disable SSL redirect even in production
     SECURE_SSL_REDIRECT = False
     
