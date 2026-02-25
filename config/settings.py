@@ -154,21 +154,20 @@ else:
     else:
         CSRF_TRUSTED_ORIGINS = []
 
-# Security Settings - Nginx handles HTTPS, so NEVER let Django redirect
-SECURE_SSL_REDIRECT = False  # CRITICAL: Nginx handles this, not Django
-SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
-PREPEND_WWW = False  # Don't redirect to www
-APPEND_SLASH = True  # Default, but explicit
+# Security Settings - Azure LB handles HTTPS, Django should never redirect
+SECURE_SSL_REDIRECT = False  # CRITICAL: Never redirect, Azure handles HTTPS
+PREPEND_WWW = False
+APPEND_SLASH = True
 
+# Don't use SECURE_PROXY_SSL_HEADER since Azure LB terminates SSL
+# and nginx forwards plain HTTP to Django
+# This prevents redirect loops and allows health checks to work
 if IS_PRODUCTION:
-    SESSION_COOKIE_SECURE = True
-    CSRF_COOKIE_SECURE = True
+    SESSION_COOKIE_SECURE = False  # Azure handles HTTPS, Django sees HTTP
+    CSRF_COOKIE_SECURE = False  # Azure handles HTTPS, Django sees HTTP
     SECURE_BROWSER_XSS_FILTER = True
     SECURE_CONTENT_TYPE_NOSNIFF = True
     X_FRAME_OPTIONS = "DENY"
-    SECURE_HSTS_SECONDS = 31536000
-    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
-    SECURE_HSTS_PRELOAD = True
 
 # Email Configuration
 if DEBUG:
