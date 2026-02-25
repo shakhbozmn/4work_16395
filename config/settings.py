@@ -154,17 +154,22 @@ else:
     else:
         CSRF_TRUSTED_ORIGINS = []
 
-# Security Settings - Azure LB handles HTTPS, Django should never redirect
-SECURE_SSL_REDIRECT = False  # CRITICAL: Never redirect, Azure handles HTTPS
+# Security Settings - Azure LB handles HTTPS, Django should NEVER redirect
+# CRITICAL: Set SECURE_SSL_REDIRECT to False to prevent redirect loops
+SECURE_SSL_REDIRECT = False
 PREPEND_WWW = False
 APPEND_SLASH = True
 
-# Don't use SECURE_PROXY_SSL_HEADER since Azure LB terminates SSL
-# and nginx forwards plain HTTP to Django
-# This prevents redirect loops and allows health checks to work
+# Production security settings (but NO SSL redirects - Azure handles that)
 if IS_PRODUCTION:
-    SESSION_COOKIE_SECURE = False  # Azure handles HTTPS, Django sees HTTP
-    CSRF_COOKIE_SECURE = False  # Azure handles HTTPS, Django sees HTTP
+    # Explicitly disable SSL redirect even in production
+    SECURE_SSL_REDIRECT = False
+    
+    # Cookies don't need secure flag since Django only sees HTTP from nginx
+    SESSION_COOKIE_SECURE = False
+    CSRF_COOKIE_SECURE = False
+    
+    # Other security headers (safe to enable)
     SECURE_BROWSER_XSS_FILTER = True
     SECURE_CONTENT_TYPE_NOSNIFF = True
     X_FRAME_OPTIONS = "DENY"
