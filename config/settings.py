@@ -158,16 +158,24 @@ else:
 # CRITICAL: Set SECURE_SSL_REDIRECT to False to prevent redirect loops
 SECURE_SSL_REDIRECT = False
 PREPEND_WWW = False
+
+# APPEND_SLASH causes 301 redirects for URLs without trailing slashes
+# Set to False if 301 redirects are problematic
 APPEND_SLASH = True
+
+# Tell Django to trust the X-Forwarded-Proto header from nginx/Azure LB
+# This is CRITICAL for proper protocol detection behind a reverse proxy
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 # Production security settings (but NO SSL redirects - Azure handles that)
 if IS_PRODUCTION:
     # Explicitly disable SSL redirect even in production
     SECURE_SSL_REDIRECT = False
     
-    # Cookies don't need secure flag since Django only sees HTTP from nginx
-    SESSION_COOKIE_SECURE = False
-    CSRF_COOKIE_SECURE = False
+    # Now that we properly detect HTTPS via X-Forwarded-Proto, enable secure cookies
+    # Django will set the Secure flag when it detects HTTPS from the proxy header
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
     
     # Other security headers (safe to enable)
     SECURE_BROWSER_XSS_FILTER = True
