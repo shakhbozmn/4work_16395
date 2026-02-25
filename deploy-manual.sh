@@ -23,7 +23,7 @@ echo "==> 6. Running migrations..."
 docker compose -f docker-compose.yml --env-file .env.production exec -T web python manage.py migrate --noinput
 
 echo "==> 7. Collecting static files..."
-docker compose -f docker-compose.yml --env-file .env.production exec -T web python manage.py collectstatic --noinput --clear
+docker compose -f docker-compose.yml --env-file .env.production exec -T web python manage.py collectstatic --noinput
 
 echo "==> 8. Checking container status..."
 docker compose -f docker-compose.yml --env-file .env.production ps
