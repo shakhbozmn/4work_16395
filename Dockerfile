@@ -33,7 +33,6 @@ RUN apt-get update && apt-get install -y \
     libpq-dev \
     postgresql-client \
     curl \
-    su-exec \
     && rm -rf /var/lib/apt/lists/*
 
 # Make entrypoint executable
