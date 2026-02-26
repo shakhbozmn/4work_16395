@@ -1,4 +1,5 @@
 """Test settings — extends development and uses Postgres."""
+
 import os
 
 from config.settings.development import *  # noqa: F401, F403

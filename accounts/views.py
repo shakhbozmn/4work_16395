@@ -66,19 +66,12 @@ def dashboard(request):
     """Role-based dashboard: clients see their projects; freelancers see their applications."""
     if request.user.role == "client":
         projects = Project.objects.filter(client=request.user).order_by("-created_at")
-        pending_applications = Application.objects.filter(
-            project__client=request.user, status="pending"
-        ).count()
+        pending_applications = Application.objects.filter(project__client=request.user, status="pending").count()
         stats = {
             "total_projects": projects.count(),
-            "active_projects": projects.filter(
-                status__in=["open", "reviewing", "assigned"]
-            ).count(),
+            "active_projects": projects.filter(status__in=["open", "reviewing", "assigned"]).count(),
             "pending_applications": pending_applications,
-            "total_spent": sum(
-                p.budget
-                for p in projects.filter(status="completed")
-            ),
+            "total_spent": sum(p.budget for p in projects.filter(status="completed")),
         }
         recent_applications = (
             Application.objects.filter(project__client=request.user)
@@ -91,19 +84,22 @@ def dashboard(request):
             {"recent_projects": projects[:10], "stats": stats, "recent_applications": recent_applications},
         )
     else:
-        applications = Application.objects.filter(
-            freelancer=request.user
-        ).select_related("project").order_by("-created_at")
-        total_earned = Project.objects.filter(
-            assigned_freelancer=request.user,
-            status="completed",
-        ).aggregate(total=Sum("budget"))["total"] or 0
+        applications = (
+            Application.objects.filter(freelancer=request.user).select_related("project").order_by("-created_at")
+        )
+        total_earned = (
+            Project.objects.filter(
+                assigned_freelancer=request.user,
+                status="completed",
+            ).aggregate(
+                total=Sum("budget")
+            )["total"]
+            or 0
+        )
         stats = {
             "total_applications": applications.count(),
             "accepted_applications": applications.filter(status="accepted").count(),
-            "active_jobs": applications.filter(
-                status="accepted", project__status="assigned"
-            ).count(),
+            "active_jobs": applications.filter(status="accepted", project__status="assigned").count(),
             "total_earned": total_earned,
         }
         return render(

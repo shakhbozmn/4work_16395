@@ -10,9 +10,7 @@ class UserModelTest(TestCase):
     """Test cases for User model"""
 
     def setUp(self):
-        self.user = User.objects.create_user(
-            username="testuser", email="test@example.com", password="testpass123"
-        )
+        self.user = User.objects.create_user(username="testuser", email="test@example.com", password="testpass123")
 
     def test_user_creation(self):
         """Test that a user can be created successfully"""
@@ -44,9 +42,7 @@ class ProfileModelTest(TestCase):
     """Test cases for Profile model"""
 
     def setUp(self):
-        self.user = User.objects.create_user(
-            username="testuser", email="test@example.com", password="testpass123"
-        )
+        self.user = User.objects.create_user(username="testuser", email="test@example.com", password="testpass123")
         self.skill = Skill.objects.create(name="Python")
 
     def test_profile_auto_creation(self):
