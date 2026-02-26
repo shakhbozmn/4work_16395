@@ -24,6 +24,19 @@
         {% if project.deadline %}<span>Due {{ project.deadline|date:"M j, Y" }}</span>{% endif %}
     </div>
 
+    {% if project.skills.all %}
+        <div class="mb-8">
+            <p class="text-xs font-medium text-gray-400 uppercase tracking-wide mb-2">Required Skills</p>
+            <div class="flex flex-wrap gap-2">
+                {% for skill in project.skills.all %}
+                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-50 text-indigo-700">
+                        {{ skill.name }}
+                    </span>
+                {% endfor %}
+            </div>
+        </div>
+    {% endif %}
+
     <div class="prose prose-sm text-gray-700 leading-relaxed mb-8">
         {{ project.description|linebreaks }}
     </div>

@@ -21,8 +21,16 @@
             </option>
         {% endfor %}
     </select>
+    <select name="skill" class="input-base max-w-xs">
+        <option value="">All skills</option>
+        {% for skill in skills %}
+            <option value="{{ skill.id }}" {% if skill.id|stringformat:'s' == selected_skill %}selected{% endif %}>
+                {{ skill.name }}
+            </option>
+        {% endfor %}
+    </select>
     <button type="submit" class="btn-ghost">Filter</button>
-    {% if search_query or selected_category %}
+    {% if search_query or selected_category or selected_skill %}
         <a href="{% url 'marketplace:project_list' %}" class="btn-ghost">Clear</a>
     {% endif %}
 </form>

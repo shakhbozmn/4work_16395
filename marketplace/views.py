@@ -20,7 +20,7 @@ class ProjectListView(ListView):
     paginate_by = 12
 
     def get_queryset(self):
-        queryset = Project.objects.filter(status="open").select_related("client", "category")
+        queryset = Project.objects.filter(status="open").select_related("client", "category").prefetch_related("skills")
 
         # Search
         search_query = self.request.GET.get("search")
@@ -32,13 +32,21 @@ class ProjectListView(ListView):
         if category_id:
             queryset = queryset.filter(category_id=category_id)
 
+        # Skills filter
+        skill_id = self.request.GET.get("skill")
+        if skill_id:
+            queryset = queryset.filter(skills__id=skill_id)
+
         return queryset
 
     def get_context_data(self, **kwargs):
+        from accounts.models import Skill
         context = super().get_context_data(**kwargs)
         context["categories"] = Category.objects.all()
+        context["skills"] = Skill.objects.all().order_by("name")
         context["search_query"] = self.request.GET.get("search", "")
         context["selected_category"] = self.request.GET.get("category", "")
+        context["selected_skill"] = self.request.GET.get("skill", "")
         return context
 
 
@@ -260,9 +268,21 @@ def application_list(request):
     status_filter = request.GET.get("status", "")
 
     if request.user.role == "client":
-        applications = Application.objects.filter(project__client=request.user).select_related("freelancer", "project")
+        applications = Application.objects.filter(
+            project__client=request.user
+        ).select_related(
+            "freelancer", "project"
+        ).prefetch_related(
+            "freelancer__profile__skills"
+        )
     else:
-        applications = Application.objects.filter(freelancer=request.user).select_related("project", "project__client")
+        applications = Application.objects.filter(
+            freelancer=request.user
+        ).select_related(
+            "project", "project__client"
+        ).prefetch_related(
+            "freelancer__profile__skills"
+        )
 
     if status_filter:
         applications = applications.filter(status=status_filter)
