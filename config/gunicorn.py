@@ -3,7 +3,7 @@ import multiprocessing
 # Server socket
 bind = "0.0.0.0:8000"
 
-# Workers
+# Workers (scale automatically based on CPU)
 workers = multiprocessing.cpu_count() * 2 + 1
 
 # Worker class
@@ -16,9 +16,12 @@ worker_connections = 1000
 max_requests = 1000
 max_requests_jitter = 50
 
-# Timeout
-timeout = 30
-keepalive = 2
+# Timeout and keepalive tuned for long-running requests
+timeout = 120
+keepalive = 5
+
+# Use shared memory for worker temp files to avoid disk I/O bottlenecks
+worker_tmp_dir = "/dev/shm"
 
 # Security
 limit_request_line = 4094

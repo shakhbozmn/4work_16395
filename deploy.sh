@@ -1,31 +1,34 @@
 #!/bin/bash
-set -e
+
+set -euo pipefail
 
 echo "========================================="
 echo "Starting Deployment Process"
 echo "========================================="
 
-# Pull latest changes
+if [[ -z "${DOCKERHUB_USERNAME:-}" ]]; then
+	echo "ERROR: DOCKERHUB_USERNAME environment variable is not set."
+	exit 1
+fi
+
 echo "Pulling latest code from git..."
-git pull origin ci_cd_fix
+git pull origin main
 
-# Stop all running containers
-echo "Stopping existing containers..."
-docker compose down
+echo "Fetching latest Docker image..."
+docker compose pull web
 
-# Build the image locally
-echo "Building Docker image..."
-docker compose build --no-cache web
+echo "Redeploying web service with zero downtime..."
+docker compose up -d --no-deps --force-recreate web
 
-# Start services
-echo "Starting services..."
-docker compose up -d
+echo "Running database migrations..."
+docker compose exec web python manage.py migrate --noinput
 
-# Wait for services to be healthy
-echo "Waiting for services to be healthy..."
+echo "Collecting static files..."
+docker compose exec web python manage.py collectstatic --noinput
+
+echo "Waiting for the application health check..."
 sleep 10
 
-# Check container status
 echo "========================================="
 echo "Container Status:"
 docker compose ps

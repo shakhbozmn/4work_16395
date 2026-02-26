@@ -1,13 +1,15 @@
 services:
   db:
+    env_file:
+      - .env
     image: postgres:15-alpine
     container_name: 4work_postgres_dev
     volumes:
       - postgres_data:/var/lib/postgresql/data
     environment:
-      POSTGRES_DB: 4work_dev_db
-      POSTGRES_USER: 4work_dev_user
-      POSTGRES_PASSWORD: 4work_apple_pass@1
+      POSTGRES_DB: ${DB_NAME:-4work_dev_db}
+      POSTGRES_USER: ${DB_USER:-4work_dev_user}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-devpassword}
     ports:
       - "5432:5432"
     healthcheck:

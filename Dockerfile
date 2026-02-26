@@ -1,6 +1,8 @@
 # Stage 1: Builder - compile dependencies
 FROM python:3.12-slim AS builder
 
+ARG DEBIAN_FRONTEND=noninteractive
+
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 
@@ -19,6 +21,8 @@ RUN pip install --no-cache-dir --upgrade pip && \
 
 # Stage 2: Production - lean runtime image
 FROM python:3.12-slim
+
+ARG DEBIAN_FRONTEND=noninteractive
 
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
