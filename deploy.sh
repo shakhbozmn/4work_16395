@@ -2,6 +2,12 @@
 
 set -euo pipefail
 
+if [ -f .env.production ]; then
+    set -a
+    source .env.production
+    set +a
+fi
+
 echo "========================================="
 echo "Starting Deployment Process"
 echo "========================================="
