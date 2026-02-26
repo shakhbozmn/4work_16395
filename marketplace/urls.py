@@ -11,11 +11,10 @@ urlpatterns = [
     path("project/create/", views.project_create, name="project_create"),
     path("project/<int:pk>/update/", views.project_update, name="project_update"),
     path("project/<int:pk>/delete/", views.project_delete, name="project_delete"),
+    path("project/<int:pk>/complete/", views.project_complete, name="project_complete"),
     # Category URLs
     path("categories/", views.CategoryListView.as_view(), name="category_list"),
-    path(
-        "category/<int:pk>/", views.CategoryDetailView.as_view(), name="category_detail"
-    ),
+    path("category/<int:pk>/", views.CategoryDetailView.as_view(), name="category_detail"),
     # Application URLs
     path(
         "project/<int:project_pk>/apply/",
@@ -32,4 +31,7 @@ urlpatterns = [
         views.application_reject,
         name="application_reject",
     ),
+    path("applications/", views.application_list, name="application_list"),
+    # Skills
+    path("skills/", views.SkillListView.as_view(), name="skill_list"),
 ]

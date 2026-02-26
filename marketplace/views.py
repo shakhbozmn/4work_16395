@@ -1,8 +1,13 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.db import transaction
 from django.db.models import Q
+from django.http import HttpResponseForbidden
 from django.shortcuts import get_object_or_404, redirect, render
+from django.views.decorators.http import require_POST
 from django.views.generic import DetailView, ListView
+
+from accounts.models import Skill
 
 from .forms import ApplicationForm, ProjectForm
 from .models import Application, Category, Project
@@ -15,17 +20,12 @@ class ProjectListView(ListView):
     paginate_by = 12
 
     def get_queryset(self):
-        queryset = Project.objects.filter(status="open").select_related(
-            "client", "category"
-        )
+        queryset = Project.objects.filter(status="open").select_related("client", "category")
 
         # Search
         search_query = self.request.GET.get("search")
         if search_query:
-            queryset = queryset.filter(
-                Q(title__icontains=search_query)
-                | Q(description__icontains=search_query)
-            )
+            queryset = queryset.filter(Q(title__icontains=search_query) | Q(description__icontains=search_query))
 
         # Category filter
         category_id = self.request.GET.get("category")
@@ -48,9 +48,7 @@ class ProjectDetailView(DetailView):
     context_object_name = "project"
 
     def get_queryset(self):
-        return Project.objects.select_related(
-            "client", "category", "assigned_freelancer"
-        )
+        return Project.objects.select_related("client", "category", "assigned_freelancer")
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -59,15 +57,15 @@ class ProjectDetailView(DetailView):
         context["has_applied"] = False
 
         if self.request.user.is_authenticated:
-            context["has_applied"] = project.applications.filter(
-                freelancer=self.request.user
-            ).exists()
+            context["has_applied"] = project.applications.filter(freelancer=self.request.user).exists()
 
         return context
 
 
 @login_required
 def project_create(request):
+    if request.user.role != "client":
+        return HttpResponseForbidden("Only clients can create projects.")
     if request.method == "POST":
         form = ProjectForm(request.POST)
         if form.is_valid():
@@ -134,9 +132,7 @@ def project_delete(request, pk):
         messages.success(request, "Project deleted successfully!")
         return redirect("marketplace:project_list")
 
-    return render(
-        request, "marketplace/project_confirm_delete.html", {"project": project}
-    )
+    return render(request, "marketplace/project_confirm_delete.html", {"project": project})
 
 
 class CategoryListView(ListView):
@@ -152,9 +148,7 @@ class CategoryDetailView(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["projects"] = self.object.projects.filter(status="open").select_related(
-            "client"
-        )
+        context["projects"] = self.object.projects.filter(status="open").select_related("client")
         return context
 
 
@@ -195,47 +189,62 @@ def application_create(request, project_pk):
 
 
 @login_required
+@require_POST
+def project_complete(request, pk):
+    project = get_object_or_404(Project, pk=pk)
+
+    if project.client != request.user:
+        messages.error(request, "You do not have permission to complete this project.")
+        return redirect("marketplace:project_detail", pk=project.pk)
+
+    if project.status != "assigned":
+        messages.error(request, "Only assigned projects can be marked as completed.")
+        return redirect("marketplace:project_detail", pk=project.pk)
+
+    project.status = "completed"
+    project.save()
+    messages.success(request, "Project marked as completed!")
+    return redirect("marketplace:project_detail", pk=project.pk)
+
+
+@login_required
+@require_POST
 def application_accept(request, pk):
     application = get_object_or_404(Application, pk=pk)
     project = application.project
 
     # Only project owner can accept applications
     if project.client != request.user:
-        messages.error(
-            request, "You do not have permission to accept this application."
-        )
+        messages.error(request, "You do not have permission to accept this application.")
         return redirect("marketplace:project_detail", pk=project.pk)
 
     if project.status != "open":
         messages.error(request, "This project is no longer accepting applications.")
         return redirect("marketplace:project_detail", pk=project.pk)
 
-    # Accept application
-    application.status = "accepted"
-    application.save()
+    with transaction.atomic():
+        application.status = "accepted"
+        application.save()
 
-    # Update project
-    project.assigned_freelancer = application.freelancer
-    project.status = "assigned"
-    project.save()
+        project.assigned_freelancer = application.freelancer
+        project.status = "assigned"
+        project.save()
 
-    # Reject other applications
-    project.applications.exclude(pk=pk).update(status="rejected")
+        project.applications.exclude(pk=pk).update(status="rejected")
 
     messages.success(request, "Application accepted successfully!")
     return redirect("marketplace:project_detail", pk=project.pk)
 
 
 @login_required
+@require_POST
 def application_reject(request, pk):
     application = get_object_or_404(Application, pk=pk)
     project = application.project
 
     # Only project owner can reject applications
     if project.client != request.user:
-        messages.error(
-            request, "You do not have permission to reject this application."
-        )
+        messages.error(request, "You do not have permission to reject this application.")
         return redirect("marketplace:project_detail", pk=project.pk)
 
     application.status = "rejected"
@@ -243,3 +252,42 @@ def application_reject(request, pk):
 
     messages.success(request, "Application rejected.")
     return redirect("marketplace:project_detail", pk=project.pk)
+
+
+@login_required
+def application_list(request):
+    """Show applications: received (client) or submitted (freelancer)."""
+    status_filter = request.GET.get("status", "")
+
+    if request.user.role == "client":
+        applications = Application.objects.filter(project__client=request.user).select_related("freelancer", "project")
+    else:
+        applications = Application.objects.filter(freelancer=request.user).select_related("project", "project__client")
+
+    if status_filter:
+        applications = applications.filter(status=status_filter)
+
+    project_filter = request.GET.get("project", "")
+    if project_filter and request.user.role == "client":
+        applications = applications.filter(project_id=project_filter)
+
+    user_projects = (
+        Project.objects.filter(client=request.user) if request.user.role == "client" else Project.objects.none()
+    )
+
+    return render(
+        request,
+        "marketplace/application_list.html",
+        {
+            "applications": applications,
+            "status_filter": status_filter,
+            "user_projects": user_projects,
+        },
+    )
+
+
+class SkillListView(ListView):
+    model = Skill
+    template_name = "marketplace/skill_list.html"
+    context_object_name = "skills"
+    queryset = Skill.objects.all().order_by("name")

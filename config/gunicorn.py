@@ -17,8 +17,13 @@ max_requests = 1000
 max_requests_jitter = 50
 
 # Timeout
-timeout = 120
+timeout = 30
 keepalive = 2
+
+# Security
+limit_request_line = 4094
+limit_request_fields = 100
+limit_request_field_size = 8190
 
 # Logging
 accesslog = "-"
@@ -28,31 +33,4 @@ loglevel = "info"
 # Process naming
 proc_name = "4work-[%(proc_num)s]"
 
-
-# Server hooks
-def when_ready(server):
-    print("Gunicorn server is ready. Spawning workers")
-
-
-def worker_int(worker):
-    print(f"Worker spawned (pid: {worker.pid})")
-
-
-def worker_abort(worker):
-    print(f"Worker received INT or QUIT signal (pid: {worker.pid})")
-
-
-def pre_fork(server, worker):
-    pass
-
-
-def post_fork(server, worker):
-    pass
-
-
-def pre_exec(server):
-    print("Forked child, re-executing.")
-
-
-def child_exit(server, worker):
-    print("Child exited.")
+preload_app = True

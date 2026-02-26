@@ -40,10 +40,12 @@ class Skill(models.Model):
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="profile")
     bio = models.TextField(blank=True)
-    hourly_rate = models.DecimalField(
-        max_digits=8, decimal_places=2, null=True, blank=True
-    )
+    # Freelancer-only
+    hourly_rate = models.DecimalField(max_digits=8, decimal_places=2, null=True, blank=True)
     skills = models.ManyToManyField(Skill, blank=True, related_name="profiles")
+    # Client-only
+    company_name = models.CharField(max_length=200, blank=True, default="")
+    # Shared
     avatar = models.ImageField(upload_to="avatars/", blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -57,6 +59,4 @@ class Profile(models.Model):
         return f"{self.user.username}'s Profile"
 
     def get_absolute_url(self):
-        return reverse(
-            "accounts:profile_detail", kwargs={"username": self.user.username}
-        )
+        return reverse("accounts:profile_detail", kwargs={"username": self.user.username})

@@ -23,9 +23,7 @@ class Command(BaseCommand):
                 call_command("loaddata", "fixtures/demo_data.json")
                 self.stdout.write(self.style.SUCCESS("Demo data loaded successfully"))
 
-            self.stdout.write(
-                self.style.SUCCESS("\nAll demo data loaded successfully!")
-            )
+            self.stdout.write(self.style.SUCCESS("\nAll demo data loaded successfully!"))
             self.stdout.write("\nDemo accounts:")
             self.stdout.write("Client: john_client / password123")
             self.stdout.write("Freelancer 1: jane_freelancer / password123")

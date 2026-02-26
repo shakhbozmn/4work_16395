@@ -1,45 +1,56 @@
 # Git
 .git
 .gitignore
-# Python
-__pycache__
+.github/
+
+# Python cache and bytecode
+__pycache__/
 *.py[cod]
 *$py.class
 *.so
 .Python
+
+# Virtual environments
 .venv
 venv/
 ENV/
+env/
+
 # IDE
 .idea/
 .vscode/
 *.swp
 *.swo
-# Environment files with secrets
-.env
-.env.local
-.env.production
+*~
+
+# Environment files (will be loaded separately)
+.env*
+!.env.example
+
 # Testing
 .pytest_cache/
 .coverage
 htmlcov/
 .tox/
+*.log
+
+# Build artifacts
+staticfiles/
+media/
+db.sqlite3
+
 # Documentation
 docs/
 *.md
 !README.md
+
 # Docker
-Dockerfile*
 docker-compose*.yml
 .docker/
-# Static files (will be collected during build)
-staticfiles/
-# Local development
-db.sqlite3
-media/
+
 # CI/CD
-.github/
 .gitlab-ci.yml
+
 # Misc
-*.log
 *.tmp
+*.bak

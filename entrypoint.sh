@@ -1,17 +1,43 @@
-#!/bin/sh
-set -e
+#!/bin/bash
+set -euo pipefail
+
+DB_HOST=${DB_HOST:-db}
+DB_PORT=${DB_PORT:-5432}
+
+echo "=================================="
+echo "Starting entrypoint script..."
+echo "=================================="
 
 echo "Waiting for PostgreSQL..."
-until pg_isready -h "${DB_HOST:-db}" -p "${DB_PORT:-5432}" -U "${DB_USER}"; do
-    sleep 1
+while ! nc -z "$DB_HOST" "$DB_PORT"; do
+  sleep 1
 done
-echo "PostgreSQL is ready."
+echo "PostgreSQL is ready!"
+
+echo "Fixing volume permissions..."
+chown -R appuser:appuser /app/staticfiles /app/media
 
 echo "Running migrations..."
-python manage.py migrate --noinput
+gosu appuser python manage.py migrate --noinput
 
 echo "Collecting static files..."
-python manage.py collectstatic --noinput --clear
+gosu appuser python manage.py collectstatic --noinput --clear
 
-echo "Starting Gunicorn..."
-exec gunicorn -c config/gunicorn.py config.wsgi:application
+echo "=================================="
+echo "Starting Gunicorn as appuser..."
+echo "=================================="
+
+echo "=== Gunicorn Diagnostic Info ==="
+echo "Gunicorn version:"
+gunicorn --version
+echo "Running as user: $(gosu appuser whoami)"
+echo "=== End Diagnostic Info ==="
+
+exec gosu appuser gunicorn config.wsgi:application \
+    --bind 0.0.0.0:8000 \
+    --workers 3 \
+    --timeout 120 \
+    --worker-tmp-dir /dev/shm \
+    --access-logfile - \
+    --error-logfile - \
+    --preload

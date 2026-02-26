@@ -10,9 +10,7 @@ class CategoryModelTest(TestCase):
     """Test cases for Category model"""
 
     def setUp(self):
-        self.category = Category.objects.create(
-            name="Web Development", description="Web development projects"
-        )
+        self.category = Category.objects.create(name="Web Development", description="Web development projects")
 
     def test_category_creation(self):
         """Test that a category can be created successfully"""
@@ -39,9 +37,7 @@ class ProjectModelTest(TestCase):
             password="testpass123",
             role="client",
         )
-        self.category = Category.objects.create(
-            name="Web Development", description="Web development projects"
-        )
+        self.category = Category.objects.create(name="Web Development", description="Web development projects")
         self.project = Project.objects.create(
             title="Test Project",
             description="Test project description",
@@ -109,9 +105,7 @@ class ApplicationModelTest(TestCase):
             password="testpass123",
             role="freelancer",
         )
-        self.category = Category.objects.create(
-            name="Web Development", description="Web development projects"
-        )
+        self.category = Category.objects.create(name="Web Development", description="Web development projects")
         self.project = Project.objects.create(
             title="Test Project",
             description="Test project description",
@@ -132,9 +126,7 @@ class ApplicationModelTest(TestCase):
         self.assertEqual(self.application.project, self.project)
         self.assertEqual(self.application.freelancer, self.freelancer_user)
         self.assertEqual(self.application.proposed_budget, 300.00)
-        self.assertEqual(
-            self.application.cover_letter, "I am interested in this project"
-        )
+        self.assertEqual(self.application.cover_letter, "I am interested in this project")
 
     def test_application_str_method(self):
         """Test __str__ method of Application model"""
@@ -181,9 +173,7 @@ class ProjectIntegrationTest(TestCase):
             password="testpass123",
             role="freelancer",
         )
-        self.category = Category.objects.create(
-            name="Web Development", description="Web development projects"
-        )
+        self.category = Category.objects.create(name="Web Development", description="Web development projects")
         self.project = Project.objects.create(
             title="Test Project",
             description="Test project description",

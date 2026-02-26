@@ -33,6 +33,8 @@ RUN apt-get update && apt-get install -y \
     libpq-dev \
     postgresql-client \
     curl \
+    netcat-openbsd \
+    gosu \
     && rm -rf /var/lib/apt/lists/*
 
 # Copy compiled Python packages and binaries from builder
@@ -42,16 +44,12 @@ COPY --from=builder /usr/local/bin /usr/local/bin
 # Copy application code
 COPY --chown=appuser:appuser . .
 
-# Copy and set up entrypoint
-COPY --chown=appuser:appuser entrypoint.sh /app/entrypoint.sh
+# Ensure entrypoint is executable after copy
 RUN chmod +x /app/entrypoint.sh
 
 # Create static and media dirs
 RUN mkdir -p /app/staticfiles /app/media && \
     chown -R appuser:appuser /app/staticfiles /app/media
-
-# Switch to non-root user
-USER appuser
 
 EXPOSE 8000
 

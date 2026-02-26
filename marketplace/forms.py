@@ -17,20 +17,15 @@ class ProjectForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields["category"].queryset = self.fields["category"].queryset.order_by(
-            "name"
-        )
+        self.fields["category"].queryset = self.fields["category"].queryset.order_by("name")
         self.fields["category"].empty_label = "Select a category"
 
 
 class ApplicationForm(forms.ModelForm):
     class Meta:
         model = Application
-        fields = ("cover_letter", "proposed_timeline", "proposed_budget")
+        fields = ("cover_letter", "proposed_timeline")
         widgets = {
             "cover_letter": forms.Textarea(attrs={"rows": 6, "class": "form-input"}),
             "proposed_timeline": forms.NumberInput(attrs={"class": "form-input"}),
-            "proposed_budget": forms.NumberInput(
-                attrs={"class": "form-input", "step": "0.01"}
-            ),
         }
