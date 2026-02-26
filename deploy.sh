@@ -1,18 +1,39 @@
 #!/bin/bash
-# deploy.sh — run on the Azure VM via CI/CD SSH step
-# Usage: cd /opt/4work && bash deploy.sh
-set -euo pipefail
+set -e
 
-echo "==> Pulling latest images..."
-docker compose -f docker-compose.yml --env-file .env.production pull
+echo "========================================="
+echo "Starting Deployment Process"
+echo "========================================="
 
-echo "==> Starting containers (zero-downtime replace)..."
-docker compose -f docker-compose.yml --env-file .env.production up -d --remove-orphans
+# Pull latest changes
+echo "Pulling latest code from git..."
+git pull origin ci_cd_fix
 
-echo "==> Waiting for containers to be healthy..."
+# Stop all running containers
+echo "Stopping existing containers..."
+docker compose down
+
+# Build the image locally
+echo "Building Docker image..."
+docker compose build --no-cache web
+
+# Start services
+echo "Starting services..."
+docker compose up -d
+
+# Wait for services to be healthy
+echo "Waiting for services to be healthy..."
 sleep 10
 
-echo "==> Pruning unused images..."
-docker image prune -f
+# Check container status
+echo "========================================="
+echo "Container Status:"
+docker compose ps
 
-echo "==> Deployment complete."
+echo "========================================="
+echo "Recent logs from app container:"
+docker logs --tail 50 4work_app
+
+echo "========================================="
+echo "Deployment completed!"
+echo "========================================="

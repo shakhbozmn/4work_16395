@@ -20,7 +20,10 @@ services:
 
   web:
     env_file: .env.production
-    image: ${DOCKERHUB_USERNAME}/4work:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: 4work:latest
     container_name: 4work_app
     restart: unless-stopped
     volumes:
