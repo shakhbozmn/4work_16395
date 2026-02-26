@@ -17,11 +17,21 @@
             {% if form.bio.errors %}<p class="mt-1 text-xs text-red-600">{{ form.bio.errors.0 }}</p>{% endif %}
         </div>
 
+        {% if user.role == 'freelancer' %}
         <div>
             <label for="{{ form.hourly_rate.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">Hourly rate ($)</label>
             <input type="number" name="{{ form.hourly_rate.name }}" id="{{ form.hourly_rate.id_for_label }}" value="{{ form.hourly_rate.value|default:'' }}" step="0.01" class="input-base">
             {% if form.hourly_rate.errors %}<p class="mt-1 text-xs text-red-600">{{ form.hourly_rate.errors.0 }}</p>{% endif %}
         </div>
+        {% endif %}
+
+        {% if user.role == 'client' %}
+        <div>
+            <label for="{{ form.company_name.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">Company / Organisation</label>
+            <input type="text" name="{{ form.company_name.name }}" id="{{ form.company_name.id_for_label }}" value="{{ form.company_name.value|default:'' }}" class="input-base" placeholder="e.g. Acme Corp">
+            {% if form.company_name.errors %}<p class="mt-1 text-xs text-red-600">{{ form.company_name.errors.0 }}</p>{% endif %}
+        </div>
+        {% endif %}
 
         <div>
             <label for="{{ form.avatar.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">Avatar</label>
@@ -29,6 +39,7 @@
             {% if form.avatar.errors %}<p class="mt-1 text-xs text-red-600">{{ form.avatar.errors.0 }}</p>{% endif %}
         </div>
 
+        {% if user.role == 'freelancer' %}
         <div>
             <label class="block text-sm font-medium text-gray-700 mb-2">Skills</label>
             <div class="grid grid-cols-2 sm:grid-cols-3 gap-2">
@@ -43,6 +54,7 @@
             </div>
             {% if form.skills.errors %}<p class="mt-1 text-xs text-red-600">{{ form.skills.errors.0 }}</p>{% endif %}
         </div>
+        {% endif %}
 
         <div class="flex gap-3 pt-2">
             <button type="submit" class="btn-primary">Save changes</button>

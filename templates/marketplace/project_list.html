@@ -34,6 +34,7 @@
             <div class="flex items-center justify-between px-5 py-4 hover:bg-gray-50 transition">
                 <div class="min-w-0 flex-1">
                     <a href="{{ project.get_absolute_url }}" class="text-sm font-medium text-gray-900 hover:text-indigo-600">{{ project.title }}</a>
+                    {% if project.description %}<p class="text-xs text-gray-500 mt-0.5 truncate">{{ project.description }}</p>{% endif %}
                     <div class="flex items-center gap-3 mt-0.5">
                         {% if project.category %}
                             <span class="text-xs text-gray-400">{{ project.category.name }}</span>

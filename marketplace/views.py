@@ -203,6 +203,25 @@ def application_create(request, project_pk):
 
 @login_required
 @require_POST
+def project_complete(request, pk):
+    project = get_object_or_404(Project, pk=pk)
+
+    if project.client != request.user:
+        messages.error(request, "You do not have permission to complete this project.")
+        return redirect("marketplace:project_detail", pk=project.pk)
+
+    if project.status != "assigned":
+        messages.error(request, "Only assigned projects can be marked as completed.")
+        return redirect("marketplace:project_detail", pk=project.pk)
+
+    project.status = "completed"
+    project.save()
+    messages.success(request, "Project marked as completed!")
+    return redirect("marketplace:project_detail", pk=project.pk)
+
+
+@login_required
+@require_POST
 def application_accept(request, pk):
     application = get_object_or_404(Application, pk=pk)
     project = application.project

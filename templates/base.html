@@ -34,6 +34,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;600;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <style>
         body { font-family: 'DM Sans', sans-serif; }
         h1, h2, h3, .font-display { font-family: 'Bricolage Grotesque', sans-serif; }
@@ -73,12 +74,20 @@
         .status-pending  { color: #d97706; background: #fffbeb; border: 1px solid #fde68a; }
         .status-accepted { color: #16a34a; background: #f0fdf4; border: 1px solid #bbf7d0; }
         .status-rejected { color: #dc2626; background: #fef2f2; border: 1px solid #fecaca; }
+        /* Flatpickr overrides */
+        .flatpickr-day.selected,
+        .flatpickr-day.selected:hover { background: #4f46e5; border-color: #4f46e5; }
+        .flatpickr-day:hover { background: #eef2ff; }
+        .flatpickr-months .flatpickr-month,
+        .flatpickr-weekdays,
+        span.flatpickr-weekday { background: #4f46e5; color: white; }
+        .flatpickr-current-month .flatpickr-monthDropdown-months { background: #4f46e5; }
     </style>
 </head>
-<body class="bg-white min-h-screen text-gray-900">
+<body class="bg-white min-h-screen flex flex-col text-gray-900">
     {% include 'components/navbar.html' %}
 
-    <main class="max-w-5xl mx-auto px-4 sm:px-6 py-10 h-full ">
+    <main class="flex-1 max-w-5xl w-full mx-auto px-4 sm:px-6 py-10">
         {% if messages %}
             <div class="mb-6 space-y-2">
                 {% for message in messages %}
@@ -99,38 +108,41 @@
     {% include 'components/footer.html' %}
 
     <script>
-        // Mobile nav toggle
         const menuBtn = document.getElementById('mobile-menu-btn');
         const mobileMenu = document.getElementById('mobile-menu');
         if (menuBtn && mobileMenu) {
             menuBtn.addEventListener('click', () => mobileMenu.classList.toggle('hidden'));
         }
 
-        // Global: input icon focus colour
-        document.addEventListener('focusin', function (e) {
-            if (e.target.matches('.input-base')) {
-                const icon = e.target.closest('.relative')?.querySelector('.field-icon, .field-icon-top');
-                if (icon) { icon.style.color = '#6366f1'; }
-            }
-        });
-        document.addEventListener('focusout', function (e) {
-            if (e.target.matches('.input-base')) {
-                const icon = e.target.closest('.relative')?.querySelector('.field-icon, .field-icon-top');
-                if (icon) { icon.style.color = ''; }
-            }
-        });
+        // document.addEventListener('focusin', function (e) {
+        //     if (e.target.matches('.input-base')) {
+        //         const icon = e.target.closest('.relative')?.querySelector('.field-icon, .field-icon-top');
+        //         if (icon) { icon.style.color = '#6366f1'; }
+        //     }
+        // });
+        // document.addEventListener('focusout', function (e) {
+        //     if (e.target.matches('.input-base')) {
+        //         const icon = e.target.closest('.relative')?.querySelector('.field-icon, .field-icon-top');
+        //         if (icon) { icon.style.color = ''; }
+        //     }
+        // });
 
-        // Global: smooth page-leave transition
-        document.addEventListener('click', function (e) {
-            const a = e.target.closest('a[href]');
-            if (!a) return;
-            const href = a.getAttribute('href');
-            if (!href || href.startsWith('#') || href.startsWith('javascript') || a.target === '_blank') return;
-            e.preventDefault();
-            document.body.style.transition = 'opacity 0.18s ease';
-            document.body.style.opacity = '0';
-            setTimeout(() => { window.location.href = href; }, 180);
-        });
+        // document.addEventListener('click', function (e) {
+        //     const a = e.target.closest('a[href]');
+        //     if (!a) return;
+        //     const href = a.getAttribute('href');
+        //     if (!href || href.startsWith('#') || href.startsWith('javascript') || a.target === '_blank') return;
+        //     e.preventDefault();
+        //     document.body.style.transition = 'opacity 0.18s ease';
+        //     document.body.style.opacity = '0';
+        //     setTimeout(() => { window.location.href = href; }, 180);
+        // });
+
+        // window.addEventListener('pageshow', function (event) {
+        //     document.body.style.opacity = '1';
+        // });
     </script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    {% block extra_js %}{% endblock %}
 </body>
 </html>

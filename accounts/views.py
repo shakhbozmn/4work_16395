@@ -1,6 +1,7 @@
 from django.contrib import messages
 from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required
+from django.db.models import Sum
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse_lazy
 from django.views.generic import CreateView
@@ -93,13 +94,17 @@ def dashboard(request):
         applications = Application.objects.filter(
             freelancer=request.user
         ).select_related("project").order_by("-created_at")
+        total_earned = Project.objects.filter(
+            assigned_freelancer=request.user,
+            status="completed",
+        ).aggregate(total=Sum("budget"))["total"] or 0
         stats = {
             "total_applications": applications.count(),
             "accepted_applications": applications.filter(status="accepted").count(),
             "active_jobs": applications.filter(
                 status="accepted", project__status="assigned"
             ).count(),
-            "total_earned": 0,  # placeholder — no payment model yet
+            "total_earned": total_earned,
         }
         return render(
             request,
@@ -113,12 +118,12 @@ def profile_update(request):
     profile = get_object_or_404(Profile, user=request.user)
 
     if request.method == "POST":
-        form = ProfileForm(request.POST, request.FILES, instance=profile)
+        form = ProfileForm(request.POST, request.FILES, instance=profile, user=request.user)
         if form.is_valid():
             form.save()
             messages.success(request, "Profile updated successfully!")
             return redirect("accounts:profile_detail", username=request.user.username)
     else:
-        form = ProfileForm(instance=profile)
+        form = ProfileForm(instance=profile, user=request.user)
 
     return render(request, "accounts/profile_update.html", {"form": form})

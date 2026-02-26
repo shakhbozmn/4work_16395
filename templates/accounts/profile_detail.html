@@ -19,9 +19,13 @@
                 <span class="text-gray-400">@{{ profile_user.username }}</span>
                 <span class="text-gray-200">&middot;</span>
                 <span class="text-gray-500">{{ profile_user.role|title }}</span>
-                {% if profile.hourly_rate %}
+                {% if profile_user.role == 'freelancer' and profile.hourly_rate %}
                     <span class="text-gray-200">&middot;</span>
                     <span class="text-gray-500">${{ profile.hourly_rate }}/hr</span>
+                {% endif %}
+                {% if profile_user.role == 'client' and profile.company_name %}
+                    <span class="text-gray-200">&middot;</span>
+                    <span class="text-gray-500">{{ profile.company_name }}</span>
                 {% endif %}
             </div>
         </div>
@@ -36,7 +40,7 @@
         </div>
     {% endif %}
 
-    {% if profile.skills.all %}
+    {% if profile_user.role == 'freelancer' and profile.skills.all %}
         <div class="mb-8">
             <p class="text-xs font-medium text-gray-400 uppercase tracking-wide mb-2">Skills</p>
             <p class="text-sm text-gray-700">{% for skill in profile.skills.all %}{{ skill.name }}{% if not forloop.last %}, {% endif %}{% endfor %}</p>
@@ -44,14 +48,18 @@
     {% endif %}
 
     <div class="flex gap-8 pt-6 border-t border-gray-100">
+        {% if profile_user.role == 'client' %}
         <div>
             <p class="text-2xl font-700 text-gray-900">{{ profile_user.projects.count }}</p>
             <p class="text-xs text-gray-400 mt-0.5">Projects posted</p>
         </div>
+        {% endif %}
+        {% if profile_user.role == 'freelancer' %}
         <div>
             <p class="text-2xl font-700 text-gray-900">{{ profile_user.applications.count }}</p>
             <p class="text-xs text-gray-400 mt-0.5">Applications made</p>
         </div>
+        {% endif %}
     </div>
 </div>
 {% endblock %}

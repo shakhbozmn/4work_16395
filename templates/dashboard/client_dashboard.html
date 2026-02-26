@@ -12,7 +12,6 @@
     <a href="{% url 'marketplace:project_create' %}" class="btn-primary">Post project</a>
 </div>
 
-<!-- Stat bar -->
 <div class="grid grid-cols-4 gap-px bg-gray-100 border border-gray-200 rounded-lg overflow-hidden mb-10">
     <div class="bg-white px-5 py-4">
         <p class="text-xs text-gray-400 uppercase tracking-wide">Projects</p>
@@ -33,9 +32,11 @@
 </div>
 
 <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-    <!-- My Projects -->
     <div>
-        <h2 class="text-sm font-medium text-gray-500 uppercase tracking-wide mb-3">My projects</h2>
+        <div class="flex items-center justify-between mb-3">
+            <h2 class="text-sm font-medium text-gray-500 uppercase tracking-wide">My projects</h2>
+            <a href="{% url 'marketplace:project_list' %}" class="text-xs text-indigo-600 hover:underline mt-2 inline-block">View all &rarr;</a>
+        </div>
         {% if recent_projects %}
             <div class="card divide-y divide-gray-100">
                 {% for project in recent_projects %}
@@ -48,7 +49,6 @@
                     </div>
                 {% endfor %}
             </div>
-            <a href="{% url 'marketplace:project_list' %}" class="text-xs text-indigo-600 hover:underline mt-2 inline-block">View all &rarr;</a>
         {% else %}
             <div class="card px-4 py-8 text-center">
                 <p class="text-sm text-gray-500 mb-3">No projects yet.</p>
@@ -57,22 +57,23 @@
         {% endif %}
     </div>
 
-    <!-- Recent Applications -->
     <div>
-        <h2 class="text-sm font-medium text-gray-500 uppercase tracking-wide mb-3">Recent applications</h2>
+        <div class="flex items-center justify-between mb-3">
+            <h2 class="text-sm font-medium text-gray-500 uppercase tracking-wide ">Recent applications</h2>
+            <a href="{% url 'marketplace:application_list' %}" class="text-xs text-indigo-600 hover:underline mt-2 inline-block">View all &rarr;</a>
+        </div>
         {% if recent_applications %}
             <div class="card divide-y divide-gray-100">
                 {% for application in recent_applications %}
                     <div class="flex items-center justify-between px-4 py-3 hover:bg-gray-50 transition">
                         <div class="min-w-0 flex-1">
                             <p class="text-sm font-medium text-gray-900 truncate">{{ application.project.title }}</p>
-                            <p class="text-xs text-gray-400">{{ application.freelancer.username }} &middot; ${{ application.proposed_budget }}</p>
+                            <p class="text-xs text-gray-400">{{ application.freelancer.username }} &middot; {{ application.proposed_timeline }} days</p>
                         </div>
                         <span class="ml-4 text-xs font-medium px-2 py-0.5 rounded status-{{ application.status }}">{{ application.get_status_display }}</span>
                     </div>
                 {% endfor %}
             </div>
-            <a href="{% url 'marketplace:application_list' %}" class="text-xs text-indigo-600 hover:underline mt-2 inline-block">View all &rarr;</a>
         {% else %}
             <div class="card px-4 py-8 text-center">
                 <p class="text-sm text-gray-500">No applications received yet.</p>

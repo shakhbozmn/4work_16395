@@ -37,8 +37,16 @@
     <!-- Actions -->
     <div class="flex gap-3">
         {% if user == project.client %}
-            <a href="{% url 'marketplace:project_update' project.pk %}" class="btn-primary">Edit</a>
-            <a href="{% url 'marketplace:project_delete' project.pk %}" class="btn-ghost text-red-600 border-red-200 hover:bg-red-50">Delete</a>
+            {% if project.status != 'completed' %}
+                <a href="{% url 'marketplace:project_update' project.pk %}" class="btn-primary">Edit</a>
+                <a href="{% url 'marketplace:project_delete' project.pk %}" class="btn-ghost text-red-600 border-red-200 hover:bg-red-50">Delete</a>
+            {% endif %}
+            {% if project.status == 'assigned' %}
+                <form method="post" action="{% url 'marketplace:project_complete' project.pk %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn-primary" style="background:#16a34a" onmouseover="this.style.background='#15803d'" onmouseout="this.style.background='#16a34a'">Mark as completed</button>
+                </form>
+            {% endif %}
         {% elif user.is_authenticated and user.role == 'freelancer' and not has_applied and project.status == 'open' %}
             <a href="{% url 'marketplace:application_create' project.pk %}" class="btn-primary">Apply now</a>
         {% elif has_applied %}
@@ -56,7 +64,7 @@
                     <div class="flex items-start justify-between">
                         <div>
                             <p class="text-sm font-medium text-gray-900">{{ application.freelancer.get_full_name|default:application.freelancer.username }}</p>
-                            <p class="text-xs text-gray-400 mt-0.5">@{{ application.freelancer.username }} &middot; ${{ application.proposed_budget }} &middot; {{ application.proposed_timeline }} days</p>
+                            <p class="text-xs text-gray-400 mt-0.5">@{{ application.freelancer.username }} &middot; {{ application.proposed_timeline }} days</p>
                         </div>
                         <span class="text-xs font-medium px-2 py-0.5 rounded status-{{ application.status }}">{{ application.status|title }}</span>
                     </div>
@@ -65,7 +73,7 @@
                         <p class="text-sm text-gray-600 mt-3 leading-relaxed">{{ application.cover_letter|truncatewords:40 }}</p>
                     {% endif %}
 
-                    {% if user == project.client %}
+                    {% if user == project.client and project.status == 'open' %}
                         <div class="flex gap-2 mt-3">
                             <form method="post" action="{% url 'marketplace:application_accept' application.pk %}" class="inline">
                                 {% csrf_token %}

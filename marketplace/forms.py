@@ -26,11 +26,8 @@ class ProjectForm(forms.ModelForm):
 class ApplicationForm(forms.ModelForm):
     class Meta:
         model = Application
-        fields = ("cover_letter", "proposed_timeline", "proposed_budget")
+        fields = ("cover_letter", "proposed_timeline")
         widgets = {
             "cover_letter": forms.Textarea(attrs={"rows": 6, "class": "form-input"}),
             "proposed_timeline": forms.NumberInput(attrs={"class": "form-input"}),
-            "proposed_budget": forms.NumberInput(
-                attrs={"class": "form-input", "step": "0.01"}
-            ),
         }

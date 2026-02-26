@@ -40,10 +40,14 @@ class Skill(models.Model):
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="profile")
     bio = models.TextField(blank=True)
+    # Freelancer-only
     hourly_rate = models.DecimalField(
         max_digits=8, decimal_places=2, null=True, blank=True
     )
     skills = models.ManyToManyField(Skill, blank=True, related_name="profiles")
+    # Client-only
+    company_name = models.CharField(max_length=200, blank=True, default="")
+    # Shared
     avatar = models.ImageField(upload_to="avatars/", blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
