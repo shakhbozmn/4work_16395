@@ -33,10 +33,9 @@ RUN apt-get update && apt-get install -y \
     libpq-dev \
     postgresql-client \
     curl \
+    netcat-openbsd \
+    gosu \
     && rm -rf /var/lib/apt/lists/*
-
-# Make entrypoint executable
-RUN chmod +x /app/bin/entrypoint.sh
 
 # Copy compiled Python packages and binaries from builder
 COPY --from=builder /usr/local/lib/python3.12/site-packages /usr/local/lib/python3.12/site-packages
@@ -45,8 +44,7 @@ COPY --from=builder /usr/local/bin /usr/local/bin
 # Copy application code
 COPY --chown=appuser:appuser . .
 
-# Copy and set up entrypoint
-COPY --chown=appuser:appuser entrypoint.sh /app/entrypoint.sh
+# Ensure entrypoint is executable after copy
 RUN chmod +x /app/entrypoint.sh
 
 # Create static and media dirs

@@ -1,5 +1,8 @@
 #!/bin/bash
-set -e
+set -euo pipefail
+
+DB_HOST=${DB_HOST:-db}
+DB_PORT=${DB_PORT:-5432}
 
 echo "=================================="
 echo "Starting entrypoint script..."
@@ -18,11 +21,11 @@ chown -R appuser:appuser /app/staticfiles /app/media
 
 # Run migrations as appuser
 echo "Running migrations..."
-su-exec appuser python manage.py migrate --noinput
+gosu appuser python manage.py migrate --noinput
 
 # Collect static files as appuser
 echo "Collecting static files..."
-su-exec appuser python manage.py collectstatic --noinput --clear
+gosu appuser python manage.py collectstatic --noinput --clear
 
 echo "=================================="
 echo "Starting Gunicorn as appuser..."
@@ -36,7 +39,7 @@ echo "Running as user: $(whoami)"
 echo "=== End Diagnostic Info ==="
 
 # Execute gunicorn as appuser
-exec su-exec appuser gunicorn config.wsgi:application \
+exec gosu appuser gunicorn config.wsgi:application \
     --bind 0.0.0.0:8000 \
     --workers 3 \
     --timeout 120 \
