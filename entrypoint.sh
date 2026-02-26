@@ -33,11 +33,4 @@ gunicorn --version
 echo "Running as user: $(gosu appuser whoami)"
 echo "=== End Diagnostic Info ==="
 
-exec gosu appuser gunicorn config.wsgi:application \
-    --bind 0.0.0.0:8000 \
-    --workers 3 \
-    --timeout 120 \
-    --worker-tmp-dir /dev/shm \
-    --access-logfile - \
-    --error-logfile - \
-    --preload
+exec gosu appuser gunicorn --config config/gunicorn.py config.wsgi:application
