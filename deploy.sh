@@ -20,12 +20,6 @@ docker compose pull web
 echo "Redeploying web service with zero downtime..."
 docker compose up -d --no-deps --force-recreate web
 
-echo "Running database migrations..."
-docker compose exec web python manage.py migrate --noinput
-
-echo "Collecting static files..."
-docker compose exec web python manage.py collectstatic --noinput
-
 echo "Waiting for the application health check..."
 sleep 10
 
