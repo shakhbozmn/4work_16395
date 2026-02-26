@@ -1,22 +1,42 @@
-#!/bin/sh
+#!/bin/bash
 set -e
 
-echo "Waiting for PostgreSQL to be ready..."
-until pg_isready -h "${DB_HOST:-db}" -p "${DB_PORT:-5432}" -U "${DB_USER:-4work_user}"; do
-  echo "PostgreSQL is unavailable - sleeping 2s"
-  sleep 2
+echo "=================================="
+echo "Starting entrypoint script..."
+echo "=================================="
+
+# Wait for database to be ready
+echo "Waiting for PostgreSQL..."
+while ! nc -z "$DB_HOST" "$DB_PORT"; do
+  sleep 1
 done
-echo "PostgreSQL is ready."
+echo "PostgreSQL is ready!"
 
-echo "Running database migrations..."
-python manage.py migrate --noinput
+# Fix ownership of volumes (running as root initially)
+echo "Fixing volume permissions..."
+chown -R appuser:appuser /app/staticfiles /app/media
 
+# Run migrations as appuser
+echo "Running migrations..."
+su-exec appuser python manage.py migrate --noinput
+
+# Collect static files as appuser
 echo "Collecting static files..."
-python manage.py collectstatic --noinput --clear
+su-exec appuser python manage.py collectstatic --noinput --clear
 
-echo "Starting Gunicorn..."
+echo "=================================="
+echo "Starting Gunicorn as appuser..."
+echo "=================================="
 
-exec gunicorn config.wsgi:application \
+# Print diagnostic info
+echo "=== Gunicorn Diagnostic Info ==="
+echo "Gunicorn version:"
+gunicorn --version
+echo "Running as user: $(whoami)"
+echo "=== End Diagnostic Info ==="
+
+# Execute gunicorn as appuser
+exec su-exec appuser gunicorn config.wsgi:application \
     --bind 0.0.0.0:8000 \
     --workers 3 \
     --timeout 120 \
