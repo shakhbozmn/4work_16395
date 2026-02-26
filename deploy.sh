@@ -9,11 +9,8 @@ docker compose -f docker-compose.yml --env-file .env.production pull
 echo "==> Starting containers (zero-downtime replace)..."
 docker compose -f docker-compose.yml --env-file .env.production up -d --remove-orphans
 
-echo "==> Running database migrations..."
-docker compose -f docker-compose.yml --env-file .env.production exec -T web python manage.py migrate --noinput
-
-echo "==> Collecting static files..."
-docker compose -f docker-compose.yml --env-file .env.production exec -T web python manage.py collectstatic --noinput
+echo "==> Waiting for containers to be healthy..."
+sleep 10
 
 echo "==> Pruning unused images..."
 docker image prune -f
