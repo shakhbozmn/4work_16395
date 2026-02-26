@@ -7,9 +7,6 @@ on:
     branches: [main]
 
 jobs:
-  # ─────────────────────────────────────────
-  # Job 1: Code quality checks
-  # ─────────────────────────────────────────
   lint:
     name: Lint & Format
     runs-on: ubuntu-latest
@@ -34,9 +31,6 @@ jobs:
       - name: Check isort
         run: isort --check-only --profile black .
 
-  # ─────────────────────────────────────────
-  # Job 2: Tests
-  # ─────────────────────────────────────────
   test:
     name: Run Tests
     runs-on: ubuntu-latest
@@ -58,6 +52,7 @@ jobs:
           --health-retries=5
 
     env:
+      DJANGO_SETTINGS_MODULE: config.settings.test
       DEBUG: "True"
       SECRET_KEY: ci-test-secret-key-not-for-production
       DB_NAME: test_4work_db
@@ -68,7 +63,6 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-
       - name: Set up Python 3.12
         uses: actions/setup-python@v5
         with:
@@ -81,10 +75,6 @@ jobs:
       - name: Run tests with coverage
         run: pytest --cov=. --cov-report=term-missing -v
 
-  # ─────────────────────────────────────────
-  # Job 3: Build & push Docker image
-  # (only on push to main, not on PRs)
-  # ─────────────────────────────────────────
   build-and-push:
     name: Build & Push Docker Image
     runs-on: ubuntu-latest
@@ -115,10 +105,6 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
-  # ─────────────────────────────────────────
-  # Job 4: Deploy to Azure VM
-  # (only on push to main, not on PRs)
-  # ─────────────────────────────────────────
   deploy:
     name: Deploy to Azure VM
     runs-on: ubuntu-latest
