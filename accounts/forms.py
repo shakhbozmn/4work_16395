@@ -6,7 +6,9 @@ from .models import Profile, User
 
 class CustomUserCreationForm(UserCreationForm):
     email = forms.EmailField(required=True)
-    role = forms.ChoiceField(choices=User.ROLE_CHOICES, widget=forms.Select(attrs={"class": "form-select"}))
+    role = forms.ChoiceField(
+        choices=User.ROLE_CHOICES, widget=forms.Select(attrs={"class": "form-select"})
+    )
 
     class Meta:
         model = User

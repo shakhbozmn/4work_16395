@@ -12,7 +12,9 @@ class ProjectListViewTest(TestCase):
 
     def setUp(self):
         self.client = Client()
-        self.category = Category.objects.create(name="Web Development", description="Web development projects")
+        self.category = Category.objects.create(
+            name="Web Development", description="Web development projects"
+        )
         self.client_user = User.objects.create_user(
             username="client",
             email="client@example.com",
@@ -41,13 +43,17 @@ class ProjectListViewTest(TestCase):
 
     def test_project_list_search(self):
         """Test project search functionality"""
-        response = self.client.get(reverse("marketplace:project_list"), {"search": "Test"})
+        response = self.client.get(
+            reverse("marketplace:project_list"), {"search": "Test"}
+        )
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Test Project")
 
     def test_project_list_category_filter(self):
         """Test project category filter"""
-        response = self.client.get(reverse("marketplace:project_list"), {"category": self.category.id})
+        response = self.client.get(
+            reverse("marketplace:project_list"), {"category": self.category.id}
+        )
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Test Project")
 
@@ -57,7 +63,9 @@ class ProjectDetailViewTest(TestCase):
 
     def setUp(self):
         self.client = Client()
-        self.category = Category.objects.create(name="Web Development", description="Web development projects")
+        self.category = Category.objects.create(
+            name="Web Development", description="Web development projects"
+        )
         self.client_user = User.objects.create_user(
             username="client",
             email="client@example.com",
@@ -74,13 +82,17 @@ class ProjectDetailViewTest(TestCase):
 
     def test_project_detail_page_loads(self):
         """Test that project detail page loads successfully"""
-        response = self.client.get(reverse("marketplace:project_detail", args=[self.project.id]))
+        response = self.client.get(
+            reverse("marketplace:project_detail", args=[self.project.id])
+        )
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, "marketplace/project_detail.html")
 
     def test_project_detail_displays_project_info(self):
         """Test that project detail displays project information"""
-        response = self.client.get(reverse("marketplace:project_detail", args=[self.project.id]))
+        response = self.client.get(
+            reverse("marketplace:project_detail", args=[self.project.id])
+        )
         self.assertContains(response, "Test Project")
         self.assertContains(response, "Test project description")
         self.assertContains(response, "500.00")
@@ -96,7 +108,9 @@ class ProjectCreateViewTest(TestCase):
 
     def setUp(self):
         self.client = Client()
-        self.category = Category.objects.create(name="Web Development", description="Web development projects")
+        self.category = Category.objects.create(
+            name="Web Development", description="Web development projects"
+        )
         self.client_user = User.objects.create_user(
             username="client",
             email="client@example.com",
@@ -137,7 +151,9 @@ class ApplicationCreateViewTest(TestCase):
 
     def setUp(self):
         self.client = Client()
-        self.category = Category.objects.create(name="Web Development", description="Web development projects")
+        self.category = Category.objects.create(
+            name="Web Development", description="Web development projects"
+        )
         self.client_user = User.objects.create_user(
             username="client",
             email="client@example.com",
@@ -160,13 +176,17 @@ class ApplicationCreateViewTest(TestCase):
 
     def test_application_create_requires_login(self):
         """Test that application creation requires login"""
-        response = self.client.get(reverse("marketplace:application_create", args=[self.project.id]))
+        response = self.client.get(
+            reverse("marketplace:application_create", args=[self.project.id])
+        )
         self.assertEqual(response.status_code, 302)
 
     def test_application_create_page_loads_for_freelancer(self):
         """Test that application create page loads for freelancer user"""
         self.client.login(username="freelancer", password="testpass123")
-        response = self.client.get(reverse("marketplace:application_create", args=[self.project.id]))
+        response = self.client.get(
+            reverse("marketplace:application_create", args=[self.project.id])
+        )
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, "marketplace/application_form.html")
 
@@ -182,7 +202,9 @@ class ApplicationCreateViewTest(TestCase):
             },
         )
         self.assertEqual(response.status_code, 302)
-        self.assertTrue(Application.objects.filter(freelancer=self.freelancer_user).exists())
+        self.assertTrue(
+            Application.objects.filter(freelancer=self.freelancer_user).exists()
+        )
 
     def test_application_prevents_duplicates(self):
         """Test that duplicate applications are prevented"""
@@ -208,7 +230,9 @@ class ApplicationCreateViewTest(TestCase):
         )
 
         # Should not create duplicate
-        self.assertEqual(Application.objects.filter(freelancer=self.freelancer_user).count(), 1)
+        self.assertEqual(
+            Application.objects.filter(freelancer=self.freelancer_user).count(), 1
+        )
 
 
 class CategoryListViewTest(TestCase):
@@ -216,7 +240,9 @@ class CategoryListViewTest(TestCase):
 
     def setUp(self):
         self.client = Client()
-        self.category = Category.objects.create(name="Web Development", description="Web development projects")
+        self.category = Category.objects.create(
+            name="Web Development", description="Web development projects"
+        )
 
     def test_category_list_page_loads(self):
         """Test that category list page loads successfully"""
@@ -235,7 +261,9 @@ class CategoryDetailViewTest(TestCase):
 
     def setUp(self):
         self.client = Client()
-        self.category = Category.objects.create(name="Web Development", description="Web development projects")
+        self.category = Category.objects.create(
+            name="Web Development", description="Web development projects"
+        )
         self.client_user = User.objects.create_user(
             username="client",
             email="client@example.com",
@@ -252,11 +280,15 @@ class CategoryDetailViewTest(TestCase):
 
     def test_category_detail_page_loads(self):
         """Test that category detail page loads successfully"""
-        response = self.client.get(reverse("marketplace:category_detail", args=[self.category.pk]))
+        response = self.client.get(
+            reverse("marketplace:category_detail", args=[self.category.pk])
+        )
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, "marketplace/category_detail.html")
 
     def test_category_detail_displays_projects(self):
         """Test that category detail displays projects in that category"""
-        response = self.client.get(reverse("marketplace:category_detail", args=[self.category.pk]))
+        response = self.client.get(
+            reverse("marketplace:category_detail", args=[self.category.pk])
+        )
         self.assertContains(response, "Test Project")

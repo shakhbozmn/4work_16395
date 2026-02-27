@@ -1,7 +1,7 @@
+from django.contrib.auth import get_user_model
 from django.core.management import call_command
 from django.core.management.base import BaseCommand
 from django.db import transaction
-from django.contrib.auth import get_user_model
 
 User = get_user_model()
 
@@ -42,7 +42,9 @@ class Command(BaseCommand):
 
                 self.stdout.write(self.style.SUCCESS("Passwords set successfully"))
 
-            self.stdout.write(self.style.SUCCESS("\nAll demo data loaded successfully!"))
+            self.stdout.write(
+                self.style.SUCCESS("\nAll demo data loaded successfully!")
+            )
             self.stdout.write("\nDemo accounts:")
             self.stdout.write("Client: john_client / password123")
             self.stdout.write("Freelancer 1: jane_freelancer / password123")

@@ -14,7 +14,9 @@ class UserAdmin(BaseUserAdmin):
 
     fieldsets = BaseUserAdmin.fieldsets + (("Additional Info", {"fields": ("role",)}),)
 
-    add_fieldsets = BaseUserAdmin.add_fieldsets + (("Additional Info", {"fields": ("role",)}),)
+    add_fieldsets = BaseUserAdmin.add_fieldsets + (
+        ("Additional Info", {"fields": ("role",)}),
+    )
 
 
 @admin.register(Skill)

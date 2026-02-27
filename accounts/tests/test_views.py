@@ -10,7 +10,9 @@ class LoginViewTest(TestCase):
 
     def setUp(self):
         self.client = Client()
-        self.user = User.objects.create_user(username="testuser", email="test@example.com", password="testpass123")
+        self.user = User.objects.create_user(
+            username="testuser", email="test@example.com", password="testpass123"
+        )
 
     def test_login_page_loads(self):
         """Test that login page loads successfully"""
@@ -68,7 +70,9 @@ class LogoutViewTest(TestCase):
 
     def setUp(self):
         self.client = Client()
-        self.user = User.objects.create_user(username="testuser", email="test@example.com", password="testpass123")
+        self.user = User.objects.create_user(
+            username="testuser", email="test@example.com", password="testpass123"
+        )
         self.client.login(username="testuser", password="testpass123")
 
     def test_logout(self):
@@ -92,7 +96,9 @@ class ProfileDetailViewTest(TestCase):
 
     def test_profile_detail_page_loads(self):
         """Test that profile detail page loads successfully"""
-        response = self.client.get(reverse("accounts:profile_detail", args=["testuser"]))
+        response = self.client.get(
+            reverse("accounts:profile_detail", args=["testuser"])
+        )
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, "accounts/profile_detail.html")
 
@@ -102,7 +108,9 @@ class ProfileDetailViewTest(TestCase):
         self.user.profile.hourly_rate = 50.00
         self.user.profile.save()
 
-        response = self.client.get(reverse("accounts:profile_detail", args=["testuser"]))
+        response = self.client.get(
+            reverse("accounts:profile_detail", args=["testuser"])
+        )
         self.assertContains(response, "testuser")
         self.assertContains(response, "Test bio")
         self.assertContains(response, "50.00")
@@ -133,7 +141,9 @@ class ProfileUpdateViewTest(TestCase):
             reverse("accounts:profile_update"),
             {"bio": "Updated bio", "hourly_rate": "75.00", "skills": []},
         )
-        self.assertRedirects(response, reverse("accounts:profile_detail", args=["testuser"]))
+        self.assertRedirects(
+            response, reverse("accounts:profile_detail", args=["testuser"])
+        )
         self.user.profile.refresh_from_db()
         self.assertEqual(self.user.profile.bio, "Updated bio")
         self.assertEqual(self.user.profile.hourly_rate, 75.00)

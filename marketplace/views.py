@@ -20,12 +20,19 @@ class ProjectListView(ListView):
     paginate_by = 12
 
     def get_queryset(self):
-        queryset = Project.objects.filter(status="open").select_related("client", "category").prefetch_related("skills")
+        queryset = (
+            Project.objects.filter(status="open")
+            .select_related("client", "category")
+            .prefetch_related("skills")
+        )
 
         # Search
         search_query = self.request.GET.get("search")
         if search_query:
-            queryset = queryset.filter(Q(title__icontains=search_query) | Q(description__icontains=search_query))
+            queryset = queryset.filter(
+                Q(title__icontains=search_query)
+                | Q(description__icontains=search_query)
+            )
 
         # Category filter
         category_id = self.request.GET.get("category")
@@ -57,7 +64,9 @@ class ProjectDetailView(DetailView):
     context_object_name = "project"
 
     def get_queryset(self):
-        return Project.objects.select_related("client", "category", "assigned_freelancer")
+        return Project.objects.select_related(
+            "client", "category", "assigned_freelancer"
+        )
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -66,7 +75,9 @@ class ProjectDetailView(DetailView):
         context["has_applied"] = False
 
         if self.request.user.is_authenticated:
-            context["has_applied"] = project.applications.filter(freelancer=self.request.user).exists()
+            context["has_applied"] = project.applications.filter(
+                freelancer=self.request.user
+            ).exists()
 
         return context
 
@@ -141,7 +152,9 @@ def project_delete(request, pk):
         messages.success(request, "Project deleted successfully!")
         return redirect("marketplace:project_list")
 
-    return render(request, "marketplace/project_confirm_delete.html", {"project": project})
+    return render(
+        request, "marketplace/project_confirm_delete.html", {"project": project}
+    )
 
 
 class CategoryListView(ListView):
@@ -157,7 +170,9 @@ class CategoryDetailView(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["projects"] = self.object.projects.filter(status="open").select_related("client")
+        context["projects"] = self.object.projects.filter(status="open").select_related(
+            "client"
+        )
         return context
 
 
@@ -224,7 +239,9 @@ def application_accept(request, pk):
 
     # Only project owner can accept applications
     if project.client != request.user:
-        messages.error(request, "You do not have permission to accept this application.")
+        messages.error(
+            request, "You do not have permission to accept this application."
+        )
         return redirect("marketplace:project_detail", pk=project.pk)
 
     if project.status != "open":
@@ -253,7 +270,9 @@ def application_reject(request, pk):
 
     # Only project owner can reject applications
     if project.client != request.user:
-        messages.error(request, "You do not have permission to reject this application.")
+        messages.error(
+            request, "You do not have permission to reject this application."
+        )
         return redirect("marketplace:project_detail", pk=project.pk)
 
     application.status = "rejected"
@@ -289,7 +308,9 @@ def application_list(request):
         applications = applications.filter(project_id=project_filter)
 
     user_projects = (
-        Project.objects.filter(client=request.user) if request.user.role == "client" else Project.objects.none()
+        Project.objects.filter(client=request.user)
+        if request.user.role == "client"
+        else Project.objects.none()
     )
 
     return render(

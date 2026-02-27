@@ -18,7 +18,9 @@ class ProjectForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields["category"].queryset = self.fields["category"].queryset.order_by("name")
+        self.fields["category"].queryset = self.fields["category"].queryset.order_by(
+            "name"
+        )
         self.fields["category"].empty_label = "Select a category"
         self.fields["skills"].queryset = self.fields["skills"].queryset.order_by("name")
 

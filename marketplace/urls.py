@@ -14,7 +14,9 @@ urlpatterns = [
     path("project/<int:pk>/complete/", views.project_complete, name="project_complete"),
     # Category URLs
     path("categories/", views.CategoryListView.as_view(), name="category_list"),
-    path("category/<int:pk>/", views.CategoryDetailView.as_view(), name="category_detail"),
+    path(
+        "category/<int:pk>/", views.CategoryDetailView.as_view(), name="category_detail"
+    ),
     # Application URLs
     path(
         "project/<int:project_pk>/apply/",
