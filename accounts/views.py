@@ -40,6 +40,8 @@ class LoginView(View):
             messages.success(request, "Login successful!")
             next_url = request.GET.get("next") or reverse_lazy("accounts:dashboard")
             return redirect(next_url)
+        else:
+            messages.error(request, "Invalid username or password. Please try again.")
         return render(request, "auth/login.html", {"form": form})
 
 
@@ -81,7 +83,11 @@ def dashboard(request):
         return render(
             request,
             "dashboard/client_dashboard.html",
-            {"recent_projects": projects[:10], "stats": stats, "recent_applications": recent_applications},
+            {
+                "recent_projects": projects[:10],
+                "stats": stats,
+                "recent_applications": recent_applications,
+            },
         )
     else:
         applications = (
@@ -102,10 +108,25 @@ def dashboard(request):
             "active_jobs": applications.filter(status="accepted", project__status="assigned").count(),
             "total_earned": total_earned,
         }
+
+        # Get skill-matched projects for freelancers
+        user_skills = request.user.profile.skills.all() if hasattr(request.user, "profile") else []
+        matched_projects = []
+        if user_skills:
+            matched_projects = (
+                Project.objects.filter(status="open", skills__in=user_skills)
+                .exclude(applications__freelancer=request.user)
+                .distinct()[:5]
+            )
+
         return render(
             request,
             "dashboard/freelancer_dashboard.html",
-            {"recent_applications": applications[:10], "stats": stats},
+            {
+                "recent_applications": applications[:10],
+                "stats": stats,
+                "matched_projects": matched_projects,
+            },
         )
 
 

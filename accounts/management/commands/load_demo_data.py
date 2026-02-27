@@ -1,6 +1,9 @@
+from django.contrib.auth import get_user_model
 from django.core.management import call_command
 from django.core.management.base import BaseCommand
 from django.db import transaction
+
+User = get_user_model()
 
 
 class Command(BaseCommand):
@@ -22,6 +25,22 @@ class Command(BaseCommand):
                 self.stdout.write("Loading demo data...")
                 call_command("loaddata", "fixtures/demo_data.json")
                 self.stdout.write(self.style.SUCCESS("Demo data loaded successfully"))
+
+                # Set passwords for demo users
+                self.stdout.write("Setting passwords for demo users...")
+                john_client = User.objects.get(username="john_client")
+                john_client.set_password("password123")
+                john_client.save()
+
+                jane_freelancer = User.objects.get(username="jane_freelancer")
+                jane_freelancer.set_password("password123")
+                jane_freelancer.save()
+
+                bob_freelancer = User.objects.get(username="bob_freelancer")
+                bob_freelancer.set_password("password123")
+                bob_freelancer.save()
+
+                self.stdout.write(self.style.SUCCESS("Passwords set successfully"))
 
             self.stdout.write(self.style.SUCCESS("\nAll demo data loaded successfully!"))
             self.stdout.write("\nDemo accounts:")

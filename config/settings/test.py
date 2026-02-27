@@ -19,3 +19,14 @@ DATABASES = {
 PASSWORD_HASHERS = [
     "django.contrib.auth.hashers.MD5PasswordHasher",
 ]
+
+# Override Redis cache with local memory cache for tests
+CACHES = {
+    "default": {
+        "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
+        "LOCATION": "unique-snowflake",
+    }
+}
+
+# Override session backend to use database instead of Redis cache
+SESSION_ENGINE = "django.contrib.sessions.backends.db"

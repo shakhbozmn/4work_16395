@@ -46,6 +46,7 @@ class Project(models.Model):
     )
 
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="open")
+    skills = models.ManyToManyField("accounts.Skill", blank=True, related_name="projects")
 
     class Meta:
         ordering = ["-created_at"]

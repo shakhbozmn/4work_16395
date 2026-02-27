@@ -31,6 +31,26 @@
     </div>
 </div>
 
+{% if matched_projects %}
+    <div class="mb-10">
+        <div class="flex items-center justify-between mb-3">
+            <h2 class="text-sm font-medium text-gray-500 uppercase tracking-wide">Recommended for you</h2>
+            <a href="{% url 'marketplace:project_list' %}" class="text-xs text-indigo-600 hover:underline">View all &rarr;</a>
+        </div>
+        <div class="card divide-y divide-gray-100">
+            {% for project in matched_projects %}
+                <div class="flex items-center justify-between px-4 py-3 hover:bg-gray-50 transition">
+                    <div class="min-w-0 flex-1">
+                        <a href="{% url 'marketplace:project_detail' project.id %}" class="text-sm font-medium text-gray-900 hover:text-indigo-600 truncate block">{{ project.title }}</a>
+                        <p class="text-xs text-gray-400">${{ project.budget }} &middot; {{ project.created_at|timesince }} ago</p>
+                    </div>
+                    <span class="ml-4 text-xs font-medium px-2 py-0.5 rounded status-{{ project.status }}">{{ project.get_status_display }}</span>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+{% endif %}
+
 <div>
     <div class="flex items-center justify-between mb-3">
         <h2 class="text-sm font-medium text-gray-500 uppercase tracking-wide">My applications</h2>

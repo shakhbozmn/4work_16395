@@ -6,19 +6,21 @@ from .models import Application, Project
 class ProjectForm(forms.ModelForm):
     class Meta:
         model = Project
-        fields = ("title", "description", "budget", "deadline", "category")
+        fields = ("title", "description", "budget", "deadline", "category", "skills")
         widgets = {
             "title": forms.TextInput(attrs={"class": "form-input"}),
             "description": forms.Textarea(attrs={"rows": 6, "class": "form-input"}),
             "budget": forms.NumberInput(attrs={"class": "form-input", "step": "0.01"}),
             "deadline": forms.DateInput(attrs={"class": "form-input", "type": "date"}),
             "category": forms.Select(attrs={"class": "form-select"}),
+            "skills": forms.CheckboxSelectMultiple(attrs={"class": "form-checkbox"}),
         }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields["category"].queryset = self.fields["category"].queryset.order_by("name")
         self.fields["category"].empty_label = "Select a category"
+        self.fields["skills"].queryset = self.fields["skills"].queryset.order_by("name")
 
 
 class ApplicationForm(forms.ModelForm):

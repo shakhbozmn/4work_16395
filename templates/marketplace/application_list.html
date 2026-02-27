@@ -66,6 +66,18 @@
                         <p class="text-xs text-gray-400 mt-0.5">
                             @{{ application.freelancer.username }} &middot; {{ application.proposed_timeline }} days &middot; {{ application.created_at|date:"M d, Y" }}
                         </p>
+                        {% if application.freelancer.profile.skills.all %}
+                            <div class="mt-2">
+                                <p class="text-xs text-gray-400 uppercase tracking-wide mb-1">Skills</p>
+                                <div class="flex flex-wrap gap-1">
+                                    {% for skill in application.freelancer.profile.skills.all %}
+                                        <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-indigo-50 text-indigo-700">
+                                            {{ skill.name }}
+                                        </span>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        {% endif %}
                     {% else %}
                         <a href="{% url 'marketplace:project_detail' application.project.id %}"
                            class="text-sm font-medium text-gray-900 hover:text-indigo-600">
