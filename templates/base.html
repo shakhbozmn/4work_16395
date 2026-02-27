@@ -42,6 +42,7 @@
         }
     </script>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;600;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
@@ -84,7 +85,6 @@
         .status-pending  { color: #d97706; background: #fffbeb; border: 1px solid #fde68a; }
         .status-accepted { color: #16a34a; background: #f0fdf4; border: 1px solid #bbf7d0; }
         .status-rejected { color: #dc2626; background: #fef2f2; border: 1px solid #fecaca; }
-        /* Flatpickr overrides */
         .flatpickr-day.selected,
         .flatpickr-day.selected:hover { background: #4f46e5; border-color: #4f46e5; }
         .flatpickr-day:hover { background: #eef2ff; }
@@ -139,34 +139,6 @@
         document.querySelectorAll('.toast-item').forEach((toast, i) => {
             setTimeout(() => dismissToast(toast), 2000 + i * 300);
         });
-
-        // document.addEventListener('focusin', function (e) {
-        //     if (e.target.matches('.input-base')) {
-        //         const icon = e.target.closest('.relative')?.querySelector('.field-icon, .field-icon-top');
-        //         if (icon) { icon.style.color = '#6366f1'; }
-        //     }
-        // });
-        // document.addEventListener('focusout', function (e) {
-        //     if (e.target.matches('.input-base')) {
-        //         const icon = e.target.closest('.relative')?.querySelector('.field-icon, .field-icon-top');
-        //         if (icon) { icon.style.color = ''; }
-        //     }
-        // });
-
-        // document.addEventListener('click', function (e) {
-        //     const a = e.target.closest('a[href]');
-        //     if (!a) return;
-        //     const href = a.getAttribute('href');
-        //     if (!href || href.startsWith('#') || href.startsWith('javascript') || a.target === '_blank') return;
-        //     e.preventDefault();
-        //     document.body.style.transition = 'opacity 0.18s ease';
-        //     document.body.style.opacity = '0';
-        //     setTimeout(() => { window.location.href = href; }, 180);
-        // });
-
-        // window.addEventListener('pageshow', function (event) {
-        //     document.body.style.opacity = '1';
-        // });
     </script>
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     {% block extra_js %}{% endblock %}
