@@ -42,9 +42,7 @@ class Command(BaseCommand):
 
                 self.stdout.write(self.style.SUCCESS("Passwords set successfully"))
 
-            self.stdout.write(
-                self.style.SUCCESS("\nAll demo data loaded successfully!")
-            )
+            self.stdout.write(self.style.SUCCESS("\nAll demo data loaded successfully!"))
             self.stdout.write("\nDemo accounts:")
             self.stdout.write("Client: john_client / password123")
             self.stdout.write("Freelancer 1: jane_freelancer / password123")

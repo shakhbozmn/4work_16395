@@ -9,8 +9,7 @@ from django.views.generic.base import View
 
 from marketplace.models import Application, Project
 
-from .forms import (CustomAuthenticationForm, CustomUserCreationForm,
-                    ProfileForm)
+from .forms import CustomAuthenticationForm, CustomUserCreationForm, ProfileForm
 from .models import Profile, User
 
 
@@ -69,14 +68,10 @@ def dashboard(request):
     """Role-based dashboard: clients see their projects; freelancers see their applications."""
     if request.user.role == "client":
         projects = Project.objects.filter(client=request.user).order_by("-created_at")
-        pending_applications = Application.objects.filter(
-            project__client=request.user, status="pending"
-        ).count()
+        pending_applications = Application.objects.filter(project__client=request.user, status="pending").count()
         stats = {
             "total_projects": projects.count(),
-            "active_projects": projects.filter(
-                status__in=["open", "reviewing", "assigned"]
-            ).count(),
+            "active_projects": projects.filter(status__in=["open", "reviewing", "assigned"]).count(),
             "pending_applications": pending_applications,
             "total_spent": sum(p.budget for p in projects.filter(status="completed")),
         }
@@ -96,32 +91,26 @@ def dashboard(request):
         )
     else:
         applications = (
-            Application.objects.filter(freelancer=request.user)
-            .select_related("project")
-            .order_by("-created_at")
+            Application.objects.filter(freelancer=request.user).select_related("project").order_by("-created_at")
         )
         total_earned = (
             Project.objects.filter(
                 assigned_freelancer=request.user,
                 status="completed",
-            ).aggregate(total=Sum("budget"))["total"]
+            ).aggregate(
+                total=Sum("budget")
+            )["total"]
             or 0
         )
         stats = {
             "total_applications": applications.count(),
             "accepted_applications": applications.filter(status="accepted").count(),
-            "active_jobs": applications.filter(
-                status="accepted", project__status="assigned"
-            ).count(),
+            "active_jobs": applications.filter(status="accepted", project__status="assigned").count(),
             "total_earned": total_earned,
         }
 
         # Get skill-matched projects for freelancers
-        user_skills = (
-            request.user.profile.skills.all()
-            if hasattr(request.user, "profile")
-            else []
-        )
+        user_skills = request.user.profile.skills.all() if hasattr(request.user, "profile") else []
         matched_projects = []
         if user_skills:
             matched_projects = (
@@ -146,9 +135,7 @@ def profile_update(request):
     profile = get_object_or_404(Profile, user=request.user)
 
     if request.method == "POST":
-        form = ProfileForm(
-            request.POST, request.FILES, instance=profile, user=request.user
-        )
+        form = ProfileForm(request.POST, request.FILES, instance=profile, user=request.user)
         if form.is_valid():
             form.save()
             messages.success(request, "Profile updated successfully!")
