@@ -471,78 +471,49 @@ The deployment is fully automated via GitHub Actions with a comprehensive CI/CD 
 
 ---
 
-### CI/CD Pipeline Flow Diagram
-<pre>
-flowchart TD
-    Start(((Developer Push<br>to main branch))) --&gt; S1
+#### CI/CD Pipeline Flow
 
-    subgraph S1 [Stage 1: Trigger &amp; Preparation]
-        direction TB
-        A1[GitHub Webhook triggers .github/workflows/deploy.yml]
-        A2[Runner: Ubuntu Latest]
-        A3[Checkout repository code]
-        A1 --&gt; A2 --&gt; A3
-    end
+**Trigger:** Pushed to `main` branch.
 
-    S1 --&gt; S2
+#### Stage 1: Trigger & Preparation
+* **Trigger:** GitHub webhook activates on push.
+* **Workflow:** `.github/workflows/deploy.yml`
+* **Environment:** GitHub-hosted Ubuntu Latest.
+* **Action:** Checkout repository code.
 
-    subgraph S2 [Stage 2: Continuous Integration]
-        direction TB
-        B1{2.1 Code Quality} --&gt;|flake8, black, isort| B2
-        B2{2.2 Unit Testing} --&gt;|pytest, coverage &gt; 80%| B3
-        B3{2.3 Security Scanning} --&gt;|Dockerfile, secrets, CVEs| EndS2[Checks Pass]
-    end
+#### Stage 2: Continuous Integration (CI)
+* **2.1 Code Quality:** Validate with `flake8` (linting), `black` (formatting), and `isort` (imports).
+* **2.2 Unit Testing:** Run `pytest` with a test DB. Fails if any test breaks or coverage drops below 80%.
+* **2.3 Security Scanning:** Scan Dockerfile, check for exposed secrets, and validate dependencies (CVEs).
 
-    S2 --&gt; S3
+#### Stage 3: Continuous Delivery (CD) - Build
+* **3.1 Setup:** Initialize Docker Buildx and load cached layers.
+* **3.2 Build:** Build image using production settings. Tag as `latest` and `<git-sha>`.
+* **3.3 Authenticate:** Login to Docker Hub using stored secrets.
+* **3.4 Push:** Push image and build cache to Docker Hub registry.
 
-    subgraph S3 [Stage 3: CD - Build]
-        direction TB
-        C1[3.1 Docker Build Setup<br>Buildx &amp; Cache] --&gt; C2
-        C2[3.2 Docker Image Build<br>Production settings &amp; optimize] --&gt; C3
-        C3[3.3 Docker Hub Auth<br>Login via Secrets] --&gt; C4
-        C4[3.4 Push to Docker Hub<br>Tags: latest &amp; git-sha]
-    end
+#### Stage 4: Server Deployment (deploy.sh)
+* **4.1 Secure Connection:** SSH into the production server using secrets.
+* **4.2 Execution Steps:**
+  1. **Pull Code:** `git pull origin main` in `/opt/4work`
+  2. **Pull Image:** `docker compose pull web`
+  3. **Verify Dependencies:** Ensure `db`, `redis`, and `nginx` are running (zero downtime).
+  4. **Redeploy Web:** `docker compose up -d --no-deps --force-recreate web`
+  5. **Migrate:** Apply pending DB changes (`python manage.py migrate`).
+  6. **Static Files:** Gather files for Nginx (`python manage.py collectstatic`).
+  7. **Health Check:** Wait 10 seconds, verify container is healthy.
+  8. **Logs:** Display the last 50 lines of deployment logs.
 
-    S3 --&gt; S4
+#### Stage 5: Post-Deployment Verification
+* **5.1 Health Checks:** HTTP GET to `/health/`, check DB and Redis connectivity.
+* **5.2 Smoke Tests:** Verify home page, user authentication, and static file delivery.
+* **5.3 Notifications:** Send success/failure alerts and update repo status.
 
-    subgraph S4 [Stage 4: CD - Server Deployment]
-        direction TB
-        D1[4.1 SSH Connection Setup] --&gt; D2[4.2 Execute deploy.sh]
-        
-        subgraph Deploy Script Steps
-            direction TB
-            DS1[1. Pull Latest Code] --&gt; DS2[2. Pull Docker Image]
-            DS2 --&gt; DS3[3. Ensure Support Services Running<br>DB, Redis, Nginx]
-            DS3 --&gt; DS4[4. Redeploy Web Service<br>Zero Downtime / Force Recreate]
-            DS4 --&gt; DS5[5. Run Database Migrations]
-            DS5 --&gt; DS6[6. Collect Static Files]
-            DS6 --&gt; DS7[7. Health Check Verification]
-            DS7 --&gt; DS8[8. Display Deployment Status logs]
-        end
-        D2 --&gt; Deploy Script Steps
-    end
-
-    S4 --&gt; S5
-
-    subgraph S5 [Stage 5: Post-Deployment Verification]
-        direction TB
-        E1[5.1 Automated Health Checks<br>/health/ &amp; DB/Redis] --&gt; E2
-        E2[5.2 Smoke Tests<br>UI, Auth, Static Files] --&gt; E3
-        E3[5.3 Notification<br>Success or Failure Alerts]
-    end
-
-    S5 --&gt; Finish(((SUCCESS)))
-
-    classDef stage fill:#f9f9f9,stroke:#333,stroke-width:2px;
-    class S1,S2,S3,S4,S5 stage;
-</pre>
----
-
-### Pipeline Failure Handling
+#### Pipeline Failure Handling
 
 If any stage fails:
 
-1. **CI Stage Failure**: Pipeline stops immediately, developer is notified via GitHub
+1. **CI Stage Failure**: Pipeline stops immediately, notified via GitHub
 2. **Build Failure**: No image is pushed to Docker Hub, deployment is aborted
 3. **Deploy Failure**: Old container continues running, rollback is automatic
 

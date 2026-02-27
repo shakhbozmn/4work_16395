@@ -106,16 +106,13 @@ def dashboard(request):
         }
 
         # Get skill-matched projects for freelancers
-        user_skills = request.user.profile.skills.all() if hasattr(request.user, 'profile') else []
+        user_skills = request.user.profile.skills.all() if hasattr(request.user, "profile") else []
         matched_projects = []
         if user_skills:
             matched_projects = (
-                Project.objects.filter(
-                    status="open",
-                    skills__in=user_skills
-                ).exclude(
-                    applications__freelancer=request.user
-                ).distinct()[:5]
+                Project.objects.filter(status="open", skills__in=user_skills)
+                .exclude(applications__freelancer=request.user)
+                .distinct()[:5]
             )
 
         return render(

@@ -41,6 +41,7 @@ class ProjectListView(ListView):
 
     def get_context_data(self, **kwargs):
         from accounts.models import Skill
+
         context = super().get_context_data(**kwargs)
         context["categories"] = Category.objects.all()
         context["skills"] = Skill.objects.all().order_by("name")
@@ -268,20 +269,16 @@ def application_list(request):
     status_filter = request.GET.get("status", "")
 
     if request.user.role == "client":
-        applications = Application.objects.filter(
-            project__client=request.user
-        ).select_related(
-            "freelancer", "project"
-        ).prefetch_related(
-            "freelancer__profile__skills"
+        applications = (
+            Application.objects.filter(project__client=request.user)
+            .select_related("freelancer", "project")
+            .prefetch_related("freelancer__profile__skills")
         )
     else:
-        applications = Application.objects.filter(
-            freelancer=request.user
-        ).select_related(
-            "project", "project__client"
-        ).prefetch_related(
-            "freelancer__profile__skills"
+        applications = (
+            Application.objects.filter(freelancer=request.user)
+            .select_related("project", "project__client")
+            .prefetch_related("freelancer__profile__skills")
         )
 
     if status_filter:
