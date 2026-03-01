@@ -221,7 +221,7 @@ After completing the setup, verify:
 ##### 1.1 Connect to Server
 
 ```bash
-ssh azure-user@dscc-shahbozms.polandcentral.cloudapp.azure.com
+ssh azure-user@fourwork.polandcentral.cloudapp.azure.com
 ```
 
 ##### 1.2 Update System and Install Docker
@@ -290,12 +290,12 @@ DB_PORT=5432
 REDIS_HOST=redis
 REDIS_PORT=6379
 
-ALLOWED_HOSTS=dscc-shahbozms.polandcentral.cloudapp.azure.com,20.215.56.24
+ALLOWED_HOSTS=fourwork.polandcentral.cloudapp.azure.com,20.215.96.174
 SITE_NAME=4work
-SITE_URL=https://dscc-shahbozms.polandcentral.cloudapp.azure.com
+SITE_URL=https://fourwork.polandcentral.cloudapp.azure.com
 
-CORS_ALLOWED_ORIGINS=https://dscc-shahbozms.polandcentral.cloudapp.azure.com,http://20.215.56.24
-CSRF_TRUSTED_ORIGINS=https://dscc-shahbozms.polandcentral.cloudapp.azure.com,http://20.215.56.24
+CORS_ALLOWED_ORIGINS=https://fourwork.polandcentral.cloudapp.azure.com,http://20.215.96.174
+CSRF_TRUSTED_ORIGINS=https://fourwork.polandcentral.cloudapp.azure.com,http://20.215.96.174
 
 DOCKERHUB_USERNAME=dockerhub-username
 ```
@@ -316,7 +316,7 @@ python -c "from django.core.management.utils import get_random_secret_key; print
 sudo apt install -y certbot python3-certbot-nginx
 
 # Obtain SSL certificate
-sudo certbot --nginx -d dscc-shahbozms.polandcentral.cloudapp.azure.com
+sudo certbot --nginx -d fourwork.polandcentral.cloudapp.azure.com
 
 # Certificates will be automatically configured in Nginx
 # Auto-renewal is configured by default
@@ -593,7 +593,7 @@ Configure these secrets in your GitHub repository settings (Settings → Secrets
 |-------------|-------------|---------|
 | `DOCKERHUB_USERNAME` | Docker Hub username | `shakhbozmn` |
 | `DOCKERHUB_TOKEN` | Docker Hub access token | Generated in Docker Hub Account Settings → Security → New Access Token |
-| `SERVER_HOST` | Production server hostname/IP | `dscc-shahbozms.polandcentral.cloudapp.azure.com` |
+| `SERVER_HOST` | Production server hostname/IP | `fourwork.polandcentral.cloudapp.azure.com` |
 | `SERVER_USER` | SSH username on server | `azure-user` |
 | `SSH_PRIVATE_KEY` | Private SSH key for server access | Contents of `~/.ssh/id_rsa` (or your private key file) |
 
@@ -714,8 +714,8 @@ docker compose exec web python manage.py dbshell
 **Accessing via Public IP vs Domain Name**
 
 The application is accessible via both:
-- **Domain (HTTPS)**: `https://dscc-shahbozms.polandcentral.cloudapp.azure.com` - Recommended for production
-- **Public IP (HTTP)**: `http://20.215.56.24` - For testing purposes
+- **Domain (HTTPS)**: `https://fourwork.polandcentral.cloudapp.azure.com` - Recommended for production
+- **Public IP (HTTP)**: `http://20.215.96.174` - For testing purposes
 
 **Why IP access shows 400 Bad Request:**
 - Django's `ALLOWED_HOSTS` must include both the domain and IP address
@@ -723,8 +723,8 @@ The application is accessible via both:
 - SSL certificates are issued for domain names only, not IP addresses
 
 **To enable IP access, ensure:**
-1. `ALLOWED_HOSTS` in `.env.production` includes: `dscc-shahbozms.polandcentral.cloudapp.azure.com,20.215.56.24`
-2. `CSRF_TRUSTED_ORIGINS` includes: `https://dscc-shahbozms.polandcentral.cloudapp.azure.com,http://20.215.56.24`
+1. `ALLOWED_HOSTS` in `.env.production` includes: `fourwork.polandcentral.cloudapp.azure.com,20.215.96.174`
+2. `CSRF_TRUSTED_ORIGINS` includes: `https://fourwork.polandcentral.cloudapp.azure.com,http://20.215.96.174`
 3. Nginx configuration accepts both domain and IP
 
 **After updating configuration:**
@@ -775,16 +775,16 @@ docker compose exec nginx nginx -s reload
 | `DB_PORT` | Integer | Database port | `5432` | No |
 | `REDIS_HOST` | String | Redis cache host address | `redis` | No (default: redis) |
 | `REDIS_PORT` | Integer | Redis cache port | `6379` | No (default: 6379) |
-| `ALLOWED_HOSTS` | String | Comma-separated allowed hosts (domain + IP) | `dscc-shahbozms.polandcentral.cloudapp.azure.com,20.215.56.24` | Yes |
+| `ALLOWED_HOSTS` | String | Comma-separated allowed hosts (domain + IP) | `fourwork.polandcentral.cloudapp.azure.com,20.215.96.174` | Yes |
 | `SITE_NAME` | String | Site name for emails/templates | `4work` | No |
-| `SITE_URL` | String | Base URL of the site (use domain for production) | `https://dscc-shahbozms.polandcentral.cloudapp.azure.com` | Yes |
-| `CORS_ALLOWED_ORIGINS` | String | Comma-separated CORS origins (domain + IP) | `https://dscc-shahbozms.polandcentral.cloudapp.azure.com,http://20.215.56.24` | No |
-| `CSRF_TRUSTED_ORIGINS` | String | Comma-separated CSRF origins (domain + IP) | `https://dscc-shahbozms.polandcentral.cloudapp.azure.com,http://20.215.56.24` | Yes |
+| `SITE_URL` | String | Base URL of the site (use domain for production) | `https://fourwork.polandcentral.cloudapp.azure.com` | Yes |
+| `CORS_ALLOWED_ORIGINS` | String | Comma-separated CORS origins (domain + IP) | `https://fourwork.polandcentral.cloudapp.azure.com,http://20.215.96.174` | No |
+| `CSRF_TRUSTED_ORIGINS` | String | Comma-separated CSRF origins (domain + IP) | `https://fourwork.polandcentral.cloudapp.azure.com,http://20.215.96.174` | Yes |
 | `DOCKERHUB_USERNAME` | String | Docker Hub username | `your-dockerhub-username` | Yes |
 
 ## 7. Screenshots
 
-All screenshots are captured from the live production deployment at **https://dscc-shahbozms.polandcentral.cloudapp.azure.com**
+All screenshots are captured from the live production deployment at **https://fourwork.polandcentral.cloudapp.azure.com**
 
 ### Home Page
 
@@ -1127,6 +1127,6 @@ This project was created as part of a DSCC module assignment. It does not repres
 
 ---
 
-**Live Demo**: https://dscc-shahbozms.polandcentral.cloudapp.azure.com
+**Live Demo**: https://fourwork.polandcentral.cloudapp.azure.com
 
 **Repository**: https://github.com/shakhbozmn/4work_16395
