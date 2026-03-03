@@ -16,8 +16,8 @@ worker_connections = 1000
 max_requests = 1000
 max_requests_jitter = 50
 
-# Timeout and keepalive tuned for long-running requests
-timeout = 120
+# Timeout and keepalive tuned to align with nginx proxy_read_timeout (60s)
+timeout = 65
 keepalive = 5
 
 # Use shared memory for worker temp files to avoid disk I/O bottlenecks
