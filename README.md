@@ -198,6 +198,21 @@ After completing the setup, verify:
 
 ---
 
+### Demo Accounts
+
+Load demo data to sign in with ready-made accounts:
+
+| Role | Username | Password |
+|------|----------|----------|
+| Client | john_client | password123 |
+| Freelancer 1 | jane_freelancer | password123 |
+| Freelancer 2 | bob_freelancer | password123 |
+| Admin | adminus | admin123us |
+
+> Admin credentials grant access to http://localhost:8000/admin.
+
+---
+
 ## 5. Deployment Instructions
 ### Production Deployment Architecture
 

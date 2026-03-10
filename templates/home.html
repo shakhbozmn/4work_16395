@@ -6,8 +6,21 @@
 
 {% block content %}
 <style>
-  @keyframes blink { 0%,100% { opacity:1 } 50% { opacity:0 } }
-  .cursor { animation: blink 1s step-start infinite; }
+  @keyframes blink {
+
+    0%,
+    100% {
+      opacity: 1
+    }
+
+    50% {
+      opacity: 0
+    }
+  }
+
+  .cursor {
+    animation: blink 1s step-start infinite;
+  }
 </style>
 
 <div class="min-h-[calc(100vh-128px)] flex flex-col items-center justify-center text-center px-4">
@@ -22,7 +35,8 @@
   </h1>
 
   <p class="animate-fade-in-2 text-gray-500 text-lg mb-10 max-w-sm mx-auto leading-relaxed">
-    A clean, no-noise marketplace connecting clients with skilled freelancers — fast.
+    A clean, no-noise marketplace connecting clients with skilled freelancers — fast. <br />
+    hello from testing
   </p>
 
   <div class="animate-fade-in-3 flex justify-center flex-wrap gap-3">
@@ -35,25 +49,25 @@
 </div>
 
 <script>
-(function () {
-  const words = ['Design', 'Development', 'Marketing', 'Copywriting', 'Strategy', 'Video Editing', 'SEO'];
-  let wi = 0, ci = 0, deleting = false;
-  const el = document.getElementById('typeword');
-  const PAUSE_FULL = 1800, PAUSE_EMPTY = 400, TYPE_MS = 80, ERASE_MS = 45;
+  (function () {
+    const words = ['Design', 'Development', 'Marketing', 'Copywriting', 'Strategy', 'Video Editing', 'SEO'];
+    let wi = 0, ci = 0, deleting = false;
+    const el = document.getElementById('typeword');
+    const PAUSE_FULL = 1800, PAUSE_EMPTY = 400, TYPE_MS = 80, ERASE_MS = 45;
 
-  function tick() {
-    const word = words[wi];
-    if (!deleting) {
-      el.textContent = word.slice(0, ++ci);
-      if (ci === word.length) { deleting = true; setTimeout(tick, PAUSE_FULL); return; }
-    } else {
-      el.textContent = word.slice(0, --ci);
-      if (ci === 0) { deleting = false; wi = (wi + 1) % words.length; setTimeout(tick, PAUSE_EMPTY); return; }
+    function tick() {
+      const word = words[wi];
+      if (!deleting) {
+        el.textContent = word.slice(0, ++ci);
+        if (ci === word.length) { deleting = true; setTimeout(tick, PAUSE_FULL); return; }
+      } else {
+        el.textContent = word.slice(0, --ci);
+        if (ci === 0) { deleting = false; wi = (wi + 1) % words.length; setTimeout(tick, PAUSE_EMPTY); return; }
+      }
+      setTimeout(tick, deleting ? ERASE_MS : TYPE_MS);
     }
-    setTimeout(tick, deleting ? ERASE_MS : TYPE_MS);
-  }
 
-  setTimeout(tick, 700);
-})();
+    setTimeout(tick, 700);
+  })();
 </script>
 {% endblock %}
